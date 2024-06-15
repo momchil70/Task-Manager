@@ -1,7 +1,7 @@
 #pragma once
 #include "String.h"
 #include "Date.h"
-#include "Optional.h"
+#include "Optional.hpp"
 #include "DatePool.h"
 
 enum class Status {
@@ -15,12 +15,11 @@ enum class Status {
 class Task
 {
 	static unsigned nextId;
-	String originalDate;
 	String name;
 	unsigned id = 0;
 	Status s =  Status::ON_HOLD;
 	String description;
-	OptionalDate date;
+	Optional<Date> date;
 
 public:
 
@@ -39,10 +38,6 @@ public:
 	void setStatus(Status _s);
 
 	void setName(String newName);
-
-	void setOriginalDate(const String& d);
-
-	const String& getOriginalDate() const;
 
 	void setDescription(String newDescr);
 

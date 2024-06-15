@@ -20,6 +20,8 @@ class DatePool
 
 	void resize(unsigned newCap);
 	void free();
+
+	~DatePool();
 public:
 
 	DatePool(const DatePool& dp) = delete;
@@ -31,6 +33,5 @@ public:
 
 	static DatePool& getInstance();
 
-	~DatePool();
 };
 

@@ -6,10 +6,9 @@ Task::Task(const String& _name, const String& due_date, const String& _descripti
 {
 	setName(_name);
 	setDescription(_description);
-	setOriginalDate(due_date);
 
 	if (due_date != "no") {
-		date.setValue(DatePool::getInstance().getDate(due_date, _name));
+		date = DatePool::getInstance().getDate(due_date, _name);
 	}
 
 	s = Status::ON_HOLD;
@@ -45,16 +44,6 @@ void Task::setStatus(Status _s)
 void Task::setName(String newName)
 {
 	name = newName;
-}
-
-void Task::setOriginalDate(const String& d)
-{
-	originalDate = d;
-}
-
-const String& Task::getOriginalDate() const
-{
-	return originalDate;
 }
 
 void Task::setDescription(String newDescr)
@@ -97,7 +86,7 @@ std::ostream& operator<<(std::ostream& os, const Task& t)
 	os << "Task id: " << t.id << std::endl;
 
 	os << "Due date: ";
-	if (t.date.hasValue()) os << t.date.getValue().getAbout() << std::endl;
+	if (t.date.hasValue()) os << t.date.getValue() << std::endl;
 	else os << "No due date" << std::endl;
 
 	os << "Task description: " << t.description << std::endl;
@@ -123,6 +112,6 @@ std::ostream& operator<<(std::ostream& os, const Task& t)
 
 bool operator==(const Task& left, const Task& right)
 {
-	return left.getTaskDate().getAbout() == right.getTaskDate().getAbout() &&
-		left.getName() == right.getName() && left.getDescription() == right.getDescription();
+	return (left.getTaskDate() == right.getTaskDate() &&
+		left.getName() == right.getName() && left.getDescription() == right.getDescription());
 }

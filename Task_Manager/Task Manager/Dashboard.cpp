@@ -31,3 +31,8 @@ const Task& Dashboard::getTask(unsigned index) const
 {
 	return todo[index];
 }
+
+void Dashboard::setDate(const Date& d)
+{
+	today = d;
+}

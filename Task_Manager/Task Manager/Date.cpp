@@ -6,114 +6,147 @@
 
 Date::Date(const String& user_given)
 {
-    getDayOfWeek(user_given);
-    getYMD(user_given);
+	parseDate(user_given);
 }
 
 void Date::addName(const String& name)
 {
-    int namesSize = names.size();
-    for (int i = 0; i < namesSize; i++) {
-        if (name == names[i]) throw std::exception("This name is already in that day!");
-    }
-    names.push_back(name);
+	int namesSize = names.size();
+	for (int i = 0; i < namesSize; i++) {
+		if (name == names[i]) throw std::exception("This name is already in that day!");
+	}
+	names.push_back(name);
 }
 
 void Date::removeName(const String& name)
 {
-    int index = 0;
+	int index = 0;
 
-    int namesSize = names.size();
-    for (int i = 0; i < namesSize; i++) {
-        if (name == names[i]) index = i;
-    }
-    names.erase(index);
+	int namesSize = names.size();
+	for (int i = 0; i < namesSize; i++) {
+		if (name == names[i]) index = i;
+	}
+	names.erase(index);
 }
 
-const String& Date::getAbout() const
+unsigned Date::getDay() const
 {
-    return about;
+	return day;
+}
+
+unsigned Date::getMonth() const
+{
+	return month;
+}
+
+unsigned Date::getYear() const
+{
+	return year;
 }
 
 const String& Date::getName(int index) const
 {
-    return names[index];
+	return names[index];
 }
 
 int Date::getNamesSize() const
 {
-    return names.size();
+	return names.size();
 }
 
 
 
 std::ostream& operator<<(std::ostream& os, const Date& d)
 {
-    os << d.about << std::endl;
-    return os;
-}
-
-void Date::getDayOfWeek(const String& user_given)
-{
-    static const char* days_of_week[] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
-
-    std::string date_str = user_given.c_str();
-    std::tm tm = {};
-    std::istringstream ss(date_str);
-
-    ss >> std::get_time(&tm, "%Y-%m-%d");
-
-    if (ss.fail()) {
-        throw std::exception("Failed to parse date!");
-    }
-
-    std::time_t time = std::mktime(&tm);
-    if (time == -1) {
-        throw std::exception("mktime failed!");
-    }
-
-    std::tm* ptm = std::localtime(&time);
-    if (ptm == nullptr) {
-        throw std::exception("localtime failed!");
-    }
-
-    about += days_of_week[ptm->tm_wday];
+	static const char* months[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+	os << d.dayOfWeek << " " << d.day << " 00:00:00 " << months[d.month - 1] << " " << d.year;
+	return os;
 }
 
 
-void Date::getYMD(const String& user_given) {
-    std::string date_str = user_given.c_str();
-    std::tm tm = {};
-    std::istringstream ss(date_str);
+void Date::parseDate(const String& user_given) {
+	static const char* days_of_week[7] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
 
-    ss >> std::get_time(&tm, "%Y-%m-%d");
+	// Parse the input date string
+	std::tm tm = {};
+	std::istringstream ss(user_given.c_str());
+	ss >> std::get_time(&tm, "%Y-%m-%d");
 
-    std::time_t time = std::mktime(&tm);
-    std::tm* ltm = std::localtime(&time);
+	// Set tm_isdst to -1 to let mktime determine if DST is in effect
+	tm.tm_isdst = -1;
 
-    static const char* weekdays[] = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
-    static const char* months[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+	// Convert to time_t
+	std::time_t time = std::mktime(&tm);
+	if (time == -1) {
+		throw std::runtime_error("mktime failed!");
+	}
 
-    about = "";
-    about += weekdays[ltm->tm_wday];
-    about += " ";
-    about += months[ltm->tm_mon];
-    about += " ";
+	// Get the local time (tm struct) from the time_t
+	std::tm* ptm = std::localtime(&time);
+	if (ptm == nullptr) {
+		throw std::runtime_error("localtime failed!");
+	}
 
-    // Convert day
-    std::ostringstream day_ss;
-    day_ss << ltm->tm_mday;
-    about += day_ss.str().c_str();
-
-    about += " 00:00:00 ";
-
-    // Convert year
-    std::ostringstream year_ss;
-    year_ss << (ltm->tm_year + 1900);
-    about += year_ss.str().c_str();
+	dayOfWeek = days_of_week[ptm->tm_wday];
+	day = ptm->tm_mday;
+	month = ptm->tm_mon + 1; 
+	year = ptm->tm_year + 1900;
 }
 
 bool operator==(const Date& lhs, const Date& rhs) {
-    
-    return lhs.getAbout() == rhs.getAbout();
+
+	return (lhs.getDay() == rhs.getDay() && lhs.getMonth() == rhs.getMonth() && lhs.getYear() == rhs.getYear());
+}
+
+bool operator!=(const Date& lhs, const Date& rhs)
+{
+	return !(lhs == rhs);
+}
+
+bool operator<(const Date& lhs, const Date& rhs)
+{
+	if (lhs.getYear() < rhs.getYear()) return true;
+
+	else if (lhs.getYear() > rhs.getYear()) return false;
+
+	else {
+		if (lhs.getMonth() < rhs.getMonth()) {
+			return true;
+		}
+		else if (lhs.getMonth() > rhs.getMonth()) {
+			return false;
+		}
+		else {
+			return lhs.getDay() < rhs.getDay();
+		}
+	}
+}
+
+bool operator>(const Date& lhs, const Date& rhs)
+{
+	if (lhs.getYear() > rhs.getYear()) return true;
+
+	else if (lhs.getYear() < rhs.getYear()) return false;
+
+	else {
+		if (lhs.getMonth() > rhs.getMonth()) {
+			return true;
+		}
+		else if (lhs.getMonth() < rhs.getMonth()) {
+			return false;
+		}
+		else {
+			return lhs.getDay() > rhs.getDay();
+		}
+	}
+}
+
+bool operator>=(const Date& lhs, const Date& rhs)
+{
+	return !(lhs < rhs);
+}
+
+bool operator<=(const Date& lhs, const Date& rhs)
+{
+	return !(lhs > rhs);
 }

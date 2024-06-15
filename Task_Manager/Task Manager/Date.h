@@ -4,20 +4,20 @@
 
 class Date
 {
-	String about;
+	String dayOfWeek;
+	unsigned day;
+	unsigned month;
+	unsigned year;
 
 	MyVector<String> names;
 
-	void getDayOfWeek(const String& user_given);
-	void getYMD(const String& user_given);
+	void parseDate(const String& user_given);
 public:
 	Date() = default;
 
 	Date(const String& user_given);
 
 	friend std::ostream& operator<<(std::ostream& os, const Date& d);
-
-	const String& getAbout() const;
 
 	int getNamesSize() const;
 
@@ -27,6 +27,17 @@ public:
 
 	void removeName(const String& name);
 
+	unsigned getDay() const;
+	unsigned getMonth() const;
+	unsigned getYear() const;
+
 };
 
 bool operator==(const Date& lhs, const Date& rhs);
+bool operator!=(const Date& lhs, const Date& rhs);
+
+bool operator<(const Date& lhs, const Date& rhs);
+bool operator>(const Date& lhs, const Date& rhs);
+
+bool operator>=(const Date& lhs, const Date& rhs);
+bool operator<=(const Date& lhs, const Date& rhs);

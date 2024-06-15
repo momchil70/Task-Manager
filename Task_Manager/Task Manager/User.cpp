@@ -96,6 +96,11 @@ void User::deleteTask(unsigned id)
 		throw std::exception("Non existing task");
 	}
 
+	try {
+		dash.removeFromTodo(id);
+	}
+	catch(std::exception& e){}
+
 	DatePool::getInstance().removeDate(tasks[index].getTaskDate(), tasks[index].getName());
 	tasks.erase(index);
 }
@@ -109,7 +114,7 @@ void User::listTasks(const String& date) const
 	for (int i = 0; i < size; i++) {
 		if (!tasks[i].hasDate()) continue;
 
-		if (tasks[i].getTaskDate().getAbout() == temp.getAbout()) {
+		if (tasks[i].getTaskDate() == temp) {
 			std::cout << tasks[i];
 			count++;
 		}

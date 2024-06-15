@@ -6,7 +6,8 @@
 class System
 {
 	MyVector<User> users;
-	User logged;
+
+	int loggedIndex;
 
 	void getUsersFromDatabase();
 

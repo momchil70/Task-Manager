@@ -127,11 +127,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CollabTask.h" />
     <ClInclude Include="Dashboard.h" />
     <ClInclude Include="Date.h" />
     <ClInclude Include="DatePool.h" />
     <ClInclude Include="Manager.h" />
     <ClInclude Include="Optional.h" />
+    <ClInclude Include="Optional.hpp" />
     <ClInclude Include="String.h" />
     <ClInclude Include="System.h" />
     <ClInclude Include="Task.h" />
@@ -139,6 +141,7 @@
     <ClInclude Include="Vector.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CollabTask.cpp" />
     <ClCompile Include="Dashboard.cpp" />
     <ClCompile Include="Date.cpp" />
     <ClCompile Include="DatePool.cpp" />

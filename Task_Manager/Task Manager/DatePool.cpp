@@ -47,7 +47,7 @@ void DatePool::free()
 	delete[] referenceCounts;
 }
 
-const Date* DatePool::getDate(const String& date, const String& taskName)
+const Date& DatePool::getDate(const String& date, const String& taskName)
 {
 	Date temp(date);
 	int index = find(temp);
