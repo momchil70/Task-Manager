@@ -27,7 +27,7 @@ public:
 	DatePool(const DatePool& dp) = delete;
 	DatePool& operator=(const DatePool& dp) = delete;
 
-	const Date* getDate(const String& date, const String& taskName);
+	const Date& getDate(const String& date, const String& taskName);
 
 	void removeDate(const Date& date, const String& taskName);
 

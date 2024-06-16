@@ -127,31 +127,51 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AddTaskCommand.h" />
+    <ClInclude Include="Collaboration.h" />
     <ClInclude Include="CollabTask.h" />
+    <ClInclude Include="Command.h" />
+    <ClInclude Include="CommandFactory.h" />
     <ClInclude Include="Dashboard.h" />
     <ClInclude Include="Date.h" />
     <ClInclude Include="DatePool.h" />
+    <ClInclude Include="ExitCommand.h" />
+    <ClInclude Include="ListTasksCommand.h" />
+    <ClInclude Include="LoginCommand.h" />
     <ClInclude Include="Manager.h" />
     <ClInclude Include="Optional.h" />
     <ClInclude Include="Optional.hpp" />
+    <ClInclude Include="RegisterCommand.h" />
+    <ClInclude Include="StartTaskCommand.h" />
     <ClInclude Include="String.h" />
     <ClInclude Include="System.h" />
     <ClInclude Include="Task.h" />
     <ClInclude Include="User.h" />
+    <ClInclude Include="UpdateTaskCommand.h" />
     <ClInclude Include="Vector.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AddTaskCommand.cpp" />
+    <ClCompile Include="Collaboration.cpp" />
     <ClCompile Include="CollabTask.cpp" />
+    <ClCompile Include="Command.cpp" />
+    <ClCompile Include="CommandFactory.cpp" />
     <ClCompile Include="Dashboard.cpp" />
     <ClCompile Include="Date.cpp" />
     <ClCompile Include="DatePool.cpp" />
+    <ClCompile Include="ExitCommand.cpp" />
+    <ClCompile Include="ListTasksCommand.cpp" />
+    <ClCompile Include="LoginCommand.cpp" />
     <ClCompile Include="Manager.cpp" />
     <ClCompile Include="Optional.cpp" />
+    <ClCompile Include="RegisterCommand.cpp" />
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="StartTaskCommand.cpp" />
     <ClCompile Include="String.cpp" />
     <ClCompile Include="System.cpp" />
     <ClCompile Include="Task.cpp" />
     <ClCompile Include="User.cpp" />
+    <ClCompile Include="UpdateTaskCommand.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

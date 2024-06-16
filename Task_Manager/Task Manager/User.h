@@ -23,7 +23,7 @@ public:
 
 	User(const String& name, unsigned pass);
 
-	void add_task(); //tuk trqbva da si priema parametrite momche
+	void add_task(const String& name, const String& date, const String& description); //tuk trqbva da si priema parametrite momche
 
 	void updateTaskName(unsigned id, const String& name);
 

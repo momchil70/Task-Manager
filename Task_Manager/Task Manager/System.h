@@ -1,13 +1,18 @@
 #pragma once
 #include "User.h"
+#include "Collaboration.h"
 #include "Vector.hpp"
+#include "Command.h"
+#include "CommandFactory.h"
 
 
 class System
 {
 	MyVector<User> users;
+	MyVector<Collaboration> collabs;
 
-	int loggedIndex;
+	bool systemRunning = true;
+	int loggedIndex = -1;
 
 	void getUsersFromDatabase();
 
@@ -15,12 +20,20 @@ class System
 
 	void saveToDataBase() const;
 
+	bool isTakenUsername(const String& name) const;
 public:
 	System();
 
-	void login();
+	void login(const String& name, unsigned pass);
 
 	void register_user();
 
+	void setTheRun(bool value);
+
+	void addUser(const User& user);
+
+	User& getActiveUser();
+
+	~System();
 };
 

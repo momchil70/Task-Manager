@@ -70,7 +70,7 @@ void Task::clearDate()
 
 void Task::setDate(const Date* d)
 {
-	date.setValue(d);
+	date = *d;
 }
 
 Task::~Task()

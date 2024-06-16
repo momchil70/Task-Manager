@@ -33,20 +33,8 @@ User::User(const String& name, unsigned pass): name(name), pass(pass)
 {
 }
 
-void User::add_task()
+void User::add_task(const String& name, const String& date, const String& description)
 {
-	String name, description, date;
-	std::cout << "Enter task name: ";
-	std::cin >> name;
-
-	std::cout << "Enter due date (y-m-d format)! If you dont want enter no: ";
-	std::cin >> date;
-
-	std::cout << "Enter task description: ";
-	std::cin >> description;
-	std::cout << std::endl;
-
-
 	Task temp(name, date, description);
 	if (checkForCopy(temp)) throw std::exception("This task already exists!");
 

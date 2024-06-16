@@ -58,7 +58,7 @@ const Date& DatePool::getDate(const String& date, const String& taskName)
 
 		referenceCounts[index]++;
 
-		return &dates[index];
+		return dates[index];
 	}
 
 	if (count == capacity) resize(capacity * 2);
@@ -70,7 +70,7 @@ const Date& DatePool::getDate(const String& date, const String& taskName)
 	dates[index].addName(taskName);
 	referenceCounts[index]++;
 
-	return &dates[index];
+	return dates[index];
 }
 
 void DatePool::removeDate(const Date& date, const String& taskName)
