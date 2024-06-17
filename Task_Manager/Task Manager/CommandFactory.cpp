@@ -15,7 +15,10 @@ Command* createCommand(const String& command, System* s)
         return new AddTaskCommand(s);
     }
     if (command == "list_tasks") {
-        return new ListTasksCommand(s);
+        return new ListTasksCommand(s, 0);
+    }
+    if (command == "list_dashboard") {
+        return new ListTasksCommand(s, 1);
     }
     if (command == "update_task_name") {
         return new UpdateTaskCommand(s, 0);
@@ -25,6 +28,15 @@ Command* createCommand(const String& command, System* s)
     }
     if (command == "start_task") {
         return new StartTaskCommand(s);
+    }
+    if (command == "add_task_to_dashboard") {
+        return new AddDashboardCommand(s);
+    }
+    if (command == "remove_task_from_dashboard") {
+        return new RemoveFromDashCommand(s);
+    }
+    if (command == "delete_task") {
+        return new DeleteTaskCommand(s);
     }
 
     throw std::exception("Non existing command!");

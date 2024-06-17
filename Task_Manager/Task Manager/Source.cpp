@@ -3,7 +3,11 @@
 #include "Date.h"
 #include "User.h"
 #include "System.h"
+#include "Task.h"
+#include "CollabTask.h"
+
 
 int main() {
 	System s;
 }
+

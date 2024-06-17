@@ -2,27 +2,27 @@
 
 int User::findTask(unsigned id) const
 {
-	int size = tasks.size();
+	int size = tasks.getSize();
 	for (int i = 0; i < size; i++) {
-		if (id == tasks[i].getId()) return i;
+		if (id == tasks[i]->getId()) return i;
 	}
 	return -1;
 }
 
 int User::findTask(const String& name) const
 {
-	int size = tasks.size();
+	int size = tasks.getSize();
 	for (int i = 0; i < size; i++) {
-		if (name == tasks[i].getName()) return i;
+		if (name == tasks[i]->getName()) return i;
 	}
 	return -1;
 }
 
 bool User::checkForCopy(const Task& t)
 {
-	int size = tasks.size();
+	int size = tasks.getSize();
 	for (int i = 0; i < size; i++) {
-		if (t == tasks[i]) {
+		if (t == *tasks[i]) {
 			return true;
 		}
 	}
@@ -38,9 +38,8 @@ void User::add_task(const String& name, const String& date, const String& descri
 	Task temp(name, date, description);
 	if (checkForCopy(temp)) throw std::exception("This task already exists!");
 
-	tasks.push_back(temp);
+	tasks.add(temp);
 	temp.clearDate();
-	
 }
 
 void User::updateTaskName(unsigned id, const String& name)
@@ -51,7 +50,7 @@ void User::updateTaskName(unsigned id, const String& name)
 		throw std::exception("Non existing task");
 	}
 
-	tasks[index].setName(name);
+	tasks[index]->setName(name);
 }
 
 void User::updateTaskDescription(unsigned id, const String& description)
@@ -62,7 +61,7 @@ void User::updateTaskDescription(unsigned id, const String& description)
 		throw std::exception("Non existing task");
 	}
 
-	tasks[index].setDescription(description);
+	tasks[index]->setDescription(description);
 }
 
 void User::startTask(unsigned id)
@@ -73,23 +72,23 @@ void User::startTask(unsigned id)
 		throw std::exception("Non existing task");
 	}
 
-	tasks[index].setStatus(Status::IN_PROGRESS);
+	tasks[index]->setStatus(Status::IN_PROGRESS);
 }
 
 void User::deleteTask(unsigned id)
 {
+	try {
+		dash.removeFromTodo(id);
+	}
+	catch (std::exception& e) {}
+
 	int index = findTask(id);
 
 	if (index == -1) {
 		throw std::exception("Non existing task");
 	}
 
-	try {
-		dash.removeFromTodo(id);
-	}
-	catch(std::exception& e){}
-
-	DatePool::getInstance().removeDate(tasks[index].getTaskDate(), tasks[index].getName());
+	DatePool::getInstance().removeDate(tasks[index]->getTaskDate(), tasks[index]->getName());
 	tasks.erase(index);
 }
 
@@ -97,13 +96,13 @@ void User::listTasks(const String& date) const
 {
 	Date temp(date);
 	int count = 0;
-	int size = tasks.size();
+	int size = tasks.getSize();
 
 	for (int i = 0; i < size; i++) {
-		if (!tasks[i].hasDate()) continue;
+		if (!tasks[i]->hasDate()) continue;
 
-		if (tasks[i].getTaskDate() == temp) {
-			std::cout << tasks[i];
+		if (tasks[i]->getTaskDate() == temp) {
+			std::cout << (*tasks[i]);
 			count++;
 		}
 	}
@@ -113,23 +112,23 @@ void User::listTasks(const String& date) const
 
 void User::listTasks() const
 {
-	int size = tasks.size();
+	int size = tasks.getSize();
 
 	if (size == 0) {
 		std::cout << "No tasks found!" << std::endl;
 	}
 	for (int i = 0; i < size; i++) {
-		std::cout << tasks[i] << std::endl;
+		std::cout << (*tasks[i]) << std::endl;
 	}
 }
 
 void User::getTask(const String& name) const
 {
 	int minIndex = -1;
-	int size = tasks.size();
+	int size = tasks.getSize();
 
 	for (int i = 0; i < size; i++) {
-		if (name == tasks[i].getName()) {
+		if (name == tasks[i]->getName()) {
 			if (minIndex == -1) minIndex = i;
 
 			else minIndex = (i < minIndex) ? i : minIndex;
@@ -142,21 +141,21 @@ void User::getTask(const String& name) const
 
 void User::getTask(unsigned id) const
 {
-	int size = tasks.size();
+	int size = tasks.getSize();
 	for (int i = 0; i < size; i++) {
-		if (id == tasks[i].getId()) std::cout << tasks[i];
+		if (id == tasks[i]->getId()) std::cout << tasks[i];
 	}
 	throw std::exception("There is not such user!");
 }
 
 void User::listCompleted() const
 {
-	int size = tasks.size();
+	int size = tasks.getSize();
 	int count = 0;
 
 	for (int i = 0; i < size; i++) {
-		if (tasks[i].getStatus() == Status::DONE) {
-			std::cout << tasks[i];
+		if (tasks[i]->getStatus() == Status::DONE) {
+			std::cout << (*tasks[i]);
 			count++;
 		}
 	}
@@ -169,7 +168,7 @@ void User::finishTask(unsigned id)
 
 	if (index == -1) throw std::exception("Task not found!");
 
-	tasks[index].setStatus(Status::DONE);
+	tasks[index]->setStatus(Status::DONE);
 }
 
 void User::listDashboard() const
@@ -180,15 +179,20 @@ void User::listDashboard() const
 		std::cout << "No tasks found in dashboard!" << std::endl;
 	}
 	for (int i = 0; i < size; i++) {
-		std::cout << dash.getTask(i) << std::endl;
+		std::cout << dash.getTask(i)->getName() << std::endl; //problem ima i tuk. Trqbva da e dash.getTask(). Sega e taka zaradi debug
 	}
+
+	//tuk ne raboti dori i dash.print(), koeto raboti dolu ---------------------------------------------------
 }
 
 void User::addTaskToDashboard(unsigned id)
 {
 	int index = findTask(id);
 
+	std::cout << *tasks[index] << std::endl << std::endl; //TUK RABOTI-------------------------------------------------
+
 	if (index==-1) throw std::exception("Task not found!");
+	if (tasks[index]->getStatus() == Status::OVERDUE) throw std::exception("Task is overdue!");
 
 	dash.addTodo(tasks[index]);
 }
@@ -206,4 +210,76 @@ const String& User::getName() const
 unsigned User::getPass() const
 {
 	return pass;
+}
+
+void User::saveToDatabase(std::ofstream& ofs) const
+{
+	unsigned nameLen = 0;
+	nameLen = name.getSize() + 1;
+	ofs.write(reinterpret_cast<const char*>(&nameLen), sizeof(unsigned));
+	ofs.write(reinterpret_cast<const char*>(name.c_str()), nameLen);
+	ofs.write(reinterpret_cast<const char*>(&pass), sizeof(unsigned));
+
+	unsigned taskCount = tasks.getSize();
+	ofs.write(reinterpret_cast<const char*>(&taskCount), sizeof(unsigned));
+	for (int i = 0; i < taskCount; i++) {
+		tasks[i]->saveToDataBase(ofs);
+	}
+	saveDashboard(ofs);
+}
+
+void User::getFromDataBase(std::ifstream& ifs)
+{
+	bool isCollab = false;
+	unsigned nameLen = 0, taskCount = 0;
+	char* tempName;
+
+	ifs.read(reinterpret_cast<char*>(&nameLen), sizeof(unsigned));
+	tempName = new char[nameLen];
+	ifs.read(reinterpret_cast<char*>(tempName), nameLen);
+	name = tempName;
+
+	ifs.read(reinterpret_cast<char*>(&pass), sizeof(unsigned));
+	ifs.read(reinterpret_cast<char*>(&taskCount), sizeof(unsigned));
+
+	for (int i = 0; i < taskCount; i++) {
+		ifs.read(reinterpret_cast<char*>(&isCollab), sizeof(bool));
+		if (isCollab) {
+			CollabTask temp;
+			temp.getFromDataBase(ifs);
+			tasks.add(temp);
+		}
+		else {
+			Task temp;
+			temp.getFromDataBase(ifs);
+			tasks.add(temp);
+		}
+	}
+	readDashboard(ifs);
+
+	dash.print(); // TOVA SUSHTO RABOTI--------------------------------------------------
+}
+
+void User::readDashboard(std::ifstream& ifs)
+{
+	unsigned size = 0;
+	int currentId = 0, currentIndex = 0;
+	ifs.read(reinterpret_cast<char*>(&size), sizeof(unsigned));
+
+	for (int i = 0; i < size; i++) {
+		ifs.read(reinterpret_cast<char*>(&currentId), sizeof(unsigned));
+		addTaskToDashboard(currentId);
+	}
+}
+
+void User::saveDashboard(std::ofstream& ofs) const
+{
+	unsigned size = dash.getSize();
+	int currentId = 0;
+	ofs.write(reinterpret_cast<const char*>(&size), sizeof(unsigned));
+
+	for (int i = 0; i < size; i++) {
+		currentId = dash.getTaskId(i);
+		ofs.write(reinterpret_cast<const char*>(&currentId), sizeof(unsigned));
+	}
 }

@@ -3,9 +3,9 @@
 
 class ListTasksCommand : public Command
 {
-
+	bool marker;
 public:
-	ListTasksCommand(System* s);
+	ListTasksCommand(System* s, bool marker);
 
 	void execute() const override;
 };

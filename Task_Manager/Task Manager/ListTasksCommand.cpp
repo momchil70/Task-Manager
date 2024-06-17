@@ -1,14 +1,18 @@
 #include "ListTasksCommand.h"
 #include "System.h"
 
-ListTasksCommand::ListTasksCommand(System* s) : Command(s)
+ListTasksCommand::ListTasksCommand(System* s, bool marker) : Command(s)
 {
+	this->marker = marker;
 }
 
 void ListTasksCommand::execute() const
 {
 	try {
-		system->getActiveUser().listTasks();
+		if (!marker)
+			system->getActiveUser().listTasks();
+		else
+			system->getActiveUser().listDashboard();
 	}
 	catch (std::exception& e) {
 		std::cout << e.what() << std::endl;

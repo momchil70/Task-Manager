@@ -2,14 +2,16 @@
 
 int Dashboard::findTask(unsigned id) const
 {
-	for (int i = 0; i < todo.size(); i++) {
-		if (id == todo[i].getId()) return i;
+	int size = todo.size();
+	for (int i = 0; i < size; i++) {
+		if (id == todo[i]->getId()) return i;
 	}
 	return -1;
 }
 
-void Dashboard::addTodo(const Task& t)
+void Dashboard::addTodo(Task* t)
 {
+	std::cout << *t << std::endl << std::endl;//TUK RABOTI----------------------------------------
 	todo.push_back(t);
 }
 
@@ -20,6 +22,7 @@ void Dashboard::removeFromTodo(unsigned id)
 	if (index == -1) throw std::exception("No such task in Dashboard!");
 
 	todo.erase(index);
+	std::cout << "Task removed successfully from dashboard!" << std::endl;
 }
 
 unsigned Dashboard::getSize() const
@@ -27,12 +30,21 @@ unsigned Dashboard::getSize() const
 	return todo.size();
 }
 
-const Task& Dashboard::getTask(unsigned index) const
+const Task* Dashboard::getTask(unsigned index) const
 {
+	if (index > todo.size()) throw std::exception("Invalid index!");
+
 	return todo[index];
 }
 
-void Dashboard::setDate(const Date& d)
+unsigned Dashboard::getTaskId(int index) const
 {
-	today = d;
+	return todo[index]->getId();
+}
+
+void Dashboard::print() const
+{
+	for (int i = 0; i < todo.size(); i++) {
+		std::cout << *todo[i] << std::endl;
+	}
 }

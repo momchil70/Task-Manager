@@ -7,22 +7,13 @@ void System::getUsersFromDatabase()
 
 	if (!ifs.is_open()) throw std::exception("Error while opening file");
 
-	String name;
-	char* tempName;
-	unsigned pass;
-	unsigned nameLen = -1;
-	while (!ifs.eof()) {
-		ifs.read(reinterpret_cast<char*>(&nameLen), sizeof(unsigned));
-		
-		if (nameLen == -1) return;
+	unsigned usersCount = 0;
+	ifs.read(reinterpret_cast<char*>(&usersCount), sizeof(unsigned));
 
-		tempName = new char[nameLen + 1];
-		ifs.read(reinterpret_cast<char*>(tempName), nameLen);
-		name = tempName;
-		ifs.read(reinterpret_cast<char*>(&pass), sizeof(unsigned));
-		delete[] tempName;
-
-		users.push_back(User(name, pass));
+	for (int i = 0; i < usersCount; i++){
+		User temp;
+		temp.getFromDataBase(ifs);
+		users.push_back(temp);
 	}
 }
 
@@ -38,7 +29,7 @@ void System::commandMode()
 			std::cout << "No logged user! I cannot execute any command! Try again!" << std::endl;
 			continue;
 		}
-		
+
 		try {
 			Command* current = createCommand(command, this);
 			current->execute();
@@ -57,14 +48,10 @@ void System::saveToDataBase() const
 	if (!ofs.is_open()) throw std::exception("Error while opening file");
 
 	unsigned size = users.size();
-	unsigned nameLen = 0;
+	ofs.write(reinterpret_cast<const char*>(&size), sizeof(unsigned));
+
 	for (int i = 0; i < size; i++) {
-		nameLen = users[i].getName().getSize() + 1;
-		String name = users[i].getName();
-		unsigned pass = users[i].getPass();
-		ofs.write(reinterpret_cast<const char*>(&nameLen), sizeof(unsigned));
-		ofs.write(reinterpret_cast<const char*>(name.c_str()), nameLen);
-		ofs.write(reinterpret_cast<const char*>(&pass), sizeof(unsigned));
+		users[i].saveToDatabase(ofs);
 	}
 	ofs.close();
 }
@@ -81,7 +68,7 @@ bool System::isTakenUsername(const String& name) const
 System::System()
 {
 	getUsersFromDatabase();
-	
+
 	commandMode();
 }
 

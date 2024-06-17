@@ -4,6 +4,7 @@ unsigned Task::nextId = 1;
 
 Task::Task(const String& _name, const String& due_date, const String& _description)
 {
+	userGivenDate = due_date;
 	setName(_name);
 	setDescription(_description);
 
@@ -80,6 +81,17 @@ Task::~Task()
 	}
 }
 
+bool Task::isCollabTask() const
+{
+	return false;
+}
+
+Task* Task::clone() const
+{
+	return new Task(*this);
+}
+
+
 std::ostream& operator<<(std::ostream& os, const Task& t)
 {
 	os << "Task name: " << t.name << std::endl;
@@ -114,4 +126,61 @@ bool operator==(const Task& left, const Task& right)
 {
 	return (left.getTaskDate() == right.getTaskDate() &&
 		left.getName() == right.getName() && left.getDescription() == right.getDescription());
+}
+
+
+void Task::saveToDataBase(std::ofstream& ofs) const
+{
+	bool isCollab = 0;
+	unsigned nameLen = name.getSize() + 1;
+	unsigned descrLen = description.getSize() + 1;
+	unsigned dateLen = userGivenDate.getSize() + 1;
+	int statusToInt = (int)(s);
+
+	ofs.write(reinterpret_cast<const char*>(&isCollab), sizeof(bool));
+
+	ofs.write(reinterpret_cast<const char*>(&nameLen), sizeof(unsigned));
+	ofs.write(reinterpret_cast<const char*>(name.c_str()), nameLen);
+
+	ofs.write(reinterpret_cast<const char*>(&id), sizeof(unsigned));
+	ofs.write(reinterpret_cast<const char*>(&statusToInt), sizeof(int));
+	
+	ofs.write(reinterpret_cast<const char*>(&descrLen), sizeof(unsigned));
+	ofs.write(reinterpret_cast<const char*>(description.c_str()), descrLen);
+
+	ofs.write(reinterpret_cast<const char*>(&dateLen), sizeof(unsigned));
+	ofs.write(reinterpret_cast<const char*>(userGivenDate.c_str()), dateLen);
+}
+
+void Task::getFromDataBase(std::ifstream& ifs)
+{
+	unsigned nameLen = 0, descrLen = 0, dateLen = 0;
+	int status = 0;
+	char* tempName;
+	char* tempDescr;
+	char* tempDate;
+
+	ifs.read(reinterpret_cast<char*>(&nameLen), sizeof(unsigned));
+	tempName = new char[nameLen];
+	ifs.read(reinterpret_cast<char*>(tempName), nameLen);
+	name = tempName;
+	delete[] tempName;
+
+	ifs.read(reinterpret_cast<char*>(&id), sizeof(unsigned));
+	ifs.read(reinterpret_cast<char*>(&status), sizeof(int));
+	s = (Status)(status);
+
+	ifs.read(reinterpret_cast<char*>(&descrLen), sizeof(unsigned));
+	tempDescr = new char[descrLen];
+	ifs.read(reinterpret_cast<char*>(tempDescr), descrLen);
+	description = tempDescr;
+	delete[] tempDescr;
+
+	ifs.read(reinterpret_cast<char*>(&dateLen), sizeof(unsigned));
+	tempDate = new char[dateLen];
+	ifs.read(reinterpret_cast<char*>(tempDate), dateLen);
+	userGivenDate = tempDate;
+	date = DatePool::getInstance().getDate(userGivenDate, name);
+	delete[] tempDate;
+	
 }

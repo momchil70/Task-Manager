@@ -1,26 +1,29 @@
 #pragma once
 #include "Task.h"
+#include "CollabTask.h"
 #include "Vector.hpp"
+#include "Optional.hpp"
+#include "Container.hpp"
 
 
 class Dashboard
 {
-	MyVector<Task> todo;
+	MyVector<Task*> todo;
 
-	Date today;
 
 	int findTask(unsigned id) const;
 public:
 
-	void addTodo(const Task& t);
+	void addTodo(Task* t);
 
 	void removeFromTodo(unsigned id);
 
 	unsigned getSize() const;
 
-	const Task& getTask(unsigned index) const;
+	const Task* getTask(unsigned index) const;
 
-	void setDate(const Date& d);
+	unsigned getTaskId(int index) const;
 
+	void print() const;
 };
 

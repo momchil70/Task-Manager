@@ -1,4 +1,5 @@
 #pragma once
+#include <fstream>
 #include "User.h"
 #include "Collaboration.h"
 #include "Vector.hpp"

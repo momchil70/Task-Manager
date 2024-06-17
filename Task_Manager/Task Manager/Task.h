@@ -1,4 +1,5 @@
 #pragma once
+#include <fstream>
 #include "String.h"
 #include "Date.h"
 #include "Optional.hpp"
@@ -14,7 +15,9 @@ enum class Status {
 
 class Task
 {
+protected:
 	static unsigned nextId;
+	String userGivenDate;
 	String name;
 	unsigned id = 0;
 	Status s =  Status::ON_HOLD;
@@ -49,10 +52,17 @@ public:
 
 	void setDate(const Date* d);
 
-	~Task();
+	virtual ~Task();
+
+	virtual bool isCollabTask() const;
+
+	virtual Task* clone() const;
 
 	friend std::ostream& operator<<(std::ostream& os, const Task& t);
 
+	virtual void saveToDataBase(std::ofstream& ofs) const;
+
+	virtual void getFromDataBase(std::ifstream& ifs);
 };
 
 bool operator==(const Task& left, const Task& right);

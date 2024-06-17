@@ -1,13 +1,15 @@
 #pragma once
-#include "Vector.hpp"
+#include <fstream>
+#include "Container.hpp"
 #include "Task.h"
+#include "CollabTask.h"
 #include "String.h"
 #include "Dashboard.h"
 
 
 class User
 {
-	MyVector<Task> tasks;
+	Container<Task> tasks;
 	Dashboard dash;
 	String name = "";
 	unsigned pass = 0;
@@ -18,6 +20,9 @@ class User
 
 	bool checkForCopy(const Task& t);
 
+	void readDashboard(std::ifstream& ifs);
+
+	void saveDashboard(std::ofstream& ofs) const;
 public:
 	User() = default;
 
@@ -54,5 +59,9 @@ public:
 	const String& getName() const;
 
 	unsigned getPass() const;
+
+	void saveToDatabase(std::ofstream& ofs) const;
+
+	void getFromDataBase(std::ifstream& ifs);
 };
 
