@@ -5,6 +5,7 @@
 #include "CollabTask.h"
 #include "String.h"
 #include "Dashboard.h"
+#include <assert.h>
 
 
 class User
@@ -63,5 +64,9 @@ public:
 	void saveToDatabase(std::ofstream& ofs) const;
 
 	void getFromDataBase(std::ifstream& ifs);
+
+	void configDashboard(const Date& today);
+
+	void configTasks(const Date& today);
 };
 

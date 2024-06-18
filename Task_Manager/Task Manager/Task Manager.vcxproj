@@ -139,8 +139,13 @@
     <ClInclude Include="DatePool.h" />
     <ClInclude Include="DeleteTaskCommand.h" />
     <ClInclude Include="ExitCommand.h" />
+    <ClInclude Include="FinishCommand.h" />
+    <ClInclude Include="GetTaskCommand.h" />
+    <ClInclude Include="ListCompletedCommand.h" />
+    <ClInclude Include="ListDateCommand.h" />
     <ClInclude Include="ListTasksCommand.h" />
     <ClInclude Include="LoginCommand.h" />
+    <ClInclude Include="LogoutCommand.h" />
     <ClInclude Include="Manager.h" />
     <ClInclude Include="Optional.h" />
     <ClInclude Include="Optional.hpp" />
@@ -152,6 +157,7 @@
     <ClInclude Include="Task.h" />
     <ClInclude Include="User.h" />
     <ClInclude Include="UpdateTaskCommand.h" />
+    <ClInclude Include="Util.h" />
     <ClInclude Include="Vector.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -166,8 +172,13 @@
     <ClCompile Include="DatePool.cpp" />
     <ClCompile Include="DeleteTaskCommand.cpp" />
     <ClCompile Include="ExitCommand.cpp" />
+    <ClCompile Include="FinishCommand.cpp" />
+    <ClCompile Include="GetTaskCommand.cpp" />
+    <ClCompile Include="ListCompletedCommand.cpp" />
+    <ClCompile Include="ListDateCommand.cpp" />
     <ClCompile Include="ListTasksCommand.cpp" />
     <ClCompile Include="LoginCommand.cpp" />
+    <ClCompile Include="LogoutCommand.cpp" />
     <ClCompile Include="Manager.cpp" />
     <ClCompile Include="Optional.cpp" />
     <ClCompile Include="RegisterCommand.cpp" />
@@ -179,6 +190,7 @@
     <ClCompile Include="Task.cpp" />
     <ClCompile Include="User.cpp" />
     <ClCompile Include="UpdateTaskCommand.cpp" />
+    <ClCompile Include="Util.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

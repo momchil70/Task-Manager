@@ -11,7 +11,6 @@ int Dashboard::findTask(unsigned id) const
 
 void Dashboard::addTodo(Task* t)
 {
-	std::cout << *t << std::endl << std::endl;//TUK RABOTI----------------------------------------
 	todo.push_back(t);
 }
 
@@ -40,11 +39,4 @@ const Task* Dashboard::getTask(unsigned index) const
 unsigned Dashboard::getTaskId(int index) const
 {
 	return todo[index]->getId();
-}
-
-void Dashboard::print() const
-{
-	for (int i = 0; i < todo.size(); i++) {
-		std::cout << *todo[i] << std::endl;
-	}
 }

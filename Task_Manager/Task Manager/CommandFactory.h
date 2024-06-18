@@ -1,6 +1,9 @@
 #pragma once
 #include "Command.h"
+#include "LogoutCommand.h"
+#include "GetTaskCommand.h"
 #include "LoginCommand.h"
+#include "FinishCommand.h"
 #include "ExitCommand.h"
 #include "RegisterCommand.h"
 #include "AddTaskCommand.h"
@@ -9,6 +12,8 @@
 #include "UpdateTaskCommand.h"
 #include "AddDashboardCommand.h"
 #include "RemoveFromDashCommand.h"
+#include "ListDateCommand.h"
+#include "ListCompletedCommand.h"
 #include "Command.h"
 #include "DeleteTaskCommand.h"
 #include "System.h"

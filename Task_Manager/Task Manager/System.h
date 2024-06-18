@@ -5,6 +5,7 @@
 #include "Vector.hpp"
 #include "Command.h"
 #include "CommandFactory.h"
+#include "Util.h"
 
 
 class System
@@ -34,6 +35,8 @@ public:
 	void addUser(const User& user);
 
 	User& getActiveUser();
+
+	void logout();
 
 	~System();
 };

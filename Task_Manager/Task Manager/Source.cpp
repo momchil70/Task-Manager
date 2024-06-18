@@ -8,6 +8,7 @@
 
 
 int main() {
-	System s;
-}
+    System s;
 
+    return 0;
+}

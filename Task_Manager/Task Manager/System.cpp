@@ -9,11 +9,11 @@ void System::getUsersFromDatabase()
 
 	unsigned usersCount = 0;
 	ifs.read(reinterpret_cast<char*>(&usersCount), sizeof(unsigned));
+	User configurational;
 
 	for (int i = 0; i < usersCount; i++){
-		User temp;
-		temp.getFromDataBase(ifs);
-		users.push_back(temp);
+		users.push_back(configurational);
+		users[i].getFromDataBase(ifs);
 	}
 }
 
@@ -23,6 +23,7 @@ void System::commandMode()
 	Command* current;
 
 	while (systemRunning) {
+		std::cout << "->";
 		std::cin >> command;
 
 		if (command != "login" && command != "register" && command != "exit" && loggedIndex == -1) {
@@ -79,6 +80,15 @@ void System::login(const String& name, unsigned pass)
 		if (name == users[i].getName() && pass == users[i].getPass()) {
 			loggedIndex = i;
 			std::cout << "Hello " << name << std::endl;
+
+			String temp = getCurrentDate(); //ETO TUK MOJESH DA SI PRAVISH TESTOVE --------------------------
+
+			Date today = DatePool::getInstance().getDate(temp, "");
+
+			users[loggedIndex].configTasks(today);
+			users[loggedIndex].configDashboard(today);
+
+			DatePool::getInstance().removeDate(today, "");
 			return;
 		}
 	}
@@ -111,6 +121,12 @@ void System::addUser(const User& user)
 User& System::getActiveUser()
 {
 	return users[loggedIndex];
+}
+
+void System::logout()
+{
+	std::cout << "Goodbye " << users[loggedIndex].getName() << "!" << std::endl;
+	loggedIndex = -1;
 }
 
 System::~System()

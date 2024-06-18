@@ -23,7 +23,5 @@ public:
 	const Task* getTask(unsigned index) const;
 
 	unsigned getTaskId(int index) const;
-
-	void print() const;
 };
 

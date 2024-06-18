@@ -29,16 +29,17 @@ bool User::checkForCopy(const Task& t)
 	return false;
 }
 
-User::User(const String& name, unsigned pass): name(name), pass(pass)
+User::User(const String& name, unsigned pass) : name(name), pass(pass)
 {
 }
 
 void User::add_task(const String& name, const String& date, const String& description)
 {
 	Task temp(name, date, description);
-	if (checkForCopy(temp)) throw std::exception("This task already exists!");
 
+	if (checkForCopy(temp)) throw std::exception("This task already exists!");
 	tasks.add(temp);
+
 	temp.clearDate();
 }
 
@@ -94,7 +95,7 @@ void User::deleteTask(unsigned id)
 
 void User::listTasks(const String& date) const
 {
-	Date temp(date);
+	Date temp = DatePool::getInstance().getDate(date, "");
 	int count = 0;
 	int size = tasks.getSize();
 
@@ -106,6 +107,7 @@ void User::listTasks(const String& date) const
 			count++;
 		}
 	}
+	DatePool::getInstance().removeDate(temp, "");
 
 	if (count == 0) std::cout << "No tasks for that date!" << std::endl;
 }
@@ -118,7 +120,7 @@ void User::listTasks() const
 		std::cout << "No tasks found!" << std::endl;
 	}
 	for (int i = 0; i < size; i++) {
-		std::cout << (*tasks[i]) << std::endl;
+		std::cout << *tasks[i] << std::endl;
 	}
 }
 
@@ -134,18 +136,19 @@ void User::getTask(const String& name) const
 			else minIndex = (i < minIndex) ? i : minIndex;
 		}
 	}
-	if (minIndex==-1) throw std::exception("There is not such user!");
+	if (minIndex == -1) throw std::exception("There is not such task!");
 
-	std::cout << tasks[minIndex];
+	std::cout << *tasks[minIndex] << std::endl;
 }
 
 void User::getTask(unsigned id) const
 {
 	int size = tasks.getSize();
 	for (int i = 0; i < size; i++) {
-		if (id == tasks[i]->getId()) std::cout << tasks[i];
+		if (id == tasks[i]->getId()) std::cout << *tasks[i] << std::endl;
+		return;
 	}
-	throw std::exception("There is not such user!");
+	throw std::exception("There is not such task!");
 }
 
 void User::listCompleted() const
@@ -171,6 +174,7 @@ void User::finishTask(unsigned id)
 	tasks[index]->setStatus(Status::DONE);
 }
 
+
 void User::listDashboard() const
 {
 	int size = dash.getSize();
@@ -178,20 +182,23 @@ void User::listDashboard() const
 	if (size == 0) {
 		std::cout << "No tasks found in dashboard!" << std::endl;
 	}
-	for (int i = 0; i < size; i++) {
-		std::cout << dash.getTask(i)->getName() << std::endl; //problem ima i tuk. Trqbva da e dash.getTask(). Sega e taka zaradi debug
-	}
 
-	//tuk ne raboti dori i dash.print(), koeto raboti dolu ---------------------------------------------------
+	for (int i = 0; i < size; i++) {
+		const Task* temp = dash.getTask(i);
+		if (temp) {
+			std::cout << *temp << std::endl;
+		}
+		else {
+			std::cout << "Could not get the task from Dashboard at index " << i << std::endl;
+		}
+	}
 }
 
 void User::addTaskToDashboard(unsigned id)
 {
 	int index = findTask(id);
 
-	std::cout << *tasks[index] << std::endl << std::endl; //TUK RABOTI-------------------------------------------------
-
-	if (index==-1) throw std::exception("Task not found!");
+	if (index == -1) throw std::exception("Task not found!");
 	if (tasks[index]->getStatus() == Status::OVERDUE) throw std::exception("Task is overdue!");
 
 	dash.addTodo(tasks[index]);
@@ -256,9 +263,34 @@ void User::getFromDataBase(std::ifstream& ifs)
 		}
 	}
 	readDashboard(ifs);
-
-	dash.print(); // TOVA SUSHTO RABOTI--------------------------------------------------
 }
+
+void User::configDashboard(const Date& today)
+{
+	int size = dash.getSize();
+
+	for (int i = 0; i < size; i++) {
+		if (dash.getTask(i)->getStatus() == Status::OVERDUE || dash.getTask(i)->getStatus() == Status::DONE) {
+			unsigned id = dash.getTask(i)->getId();
+			dash.removeFromTodo(id);
+		}
+	}
+}
+
+void User::configTasks(const Date& today)
+{
+	int size = tasks.getSize();
+	for (int i = 0; i < size; i++) {
+		if (today == tasks[i]->getTaskDate() && tasks[i]->getStatus()!=Status::IN_PROGRESS) {
+			tasks[i]->setStatus(Status::IN_PROGRESS);
+			dash.addTodo(tasks[i]);
+		}
+		if (today > tasks[i]->getTaskDate()) {
+			tasks[i]->setStatus(Status::OVERDUE);
+		}
+	}
+}
+
 
 void User::readDashboard(std::ifstream& ifs)
 {
@@ -268,7 +300,12 @@ void User::readDashboard(std::ifstream& ifs)
 
 	for (int i = 0; i < size; i++) {
 		ifs.read(reinterpret_cast<char*>(&currentId), sizeof(unsigned));
-		addTaskToDashboard(currentId);
+		try {
+			addTaskToDashboard(currentId);
+		}
+		catch (std::exception& e) {
+			std::cout << e.what() << std::endl;
+		}
 	}
 }
 
