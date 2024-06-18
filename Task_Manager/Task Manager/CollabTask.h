@@ -1,14 +1,15 @@
 #pragma once
 #include "Task.h"
-#include "Optional.h"
+#include "String.h"
 
 class CollabTask: public Task
 {
-	Optional<String> asignee;
+	String asignee;
 
 public:
+	CollabTask() = default;
 
-	void asignUser(const String& username);
+	CollabTask(const String& _name, const String& due_date, const String& _description, const String& asignee);
 
 	bool isCollabTask() const override;
 
@@ -17,5 +18,8 @@ public:
 	void saveToDataBase(std::ofstream& ofs) const override;
 
 	void getFromDataBase(std::ifstream& ifs) override;
+
+	void print() const override;
 };
+
 

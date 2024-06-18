@@ -128,12 +128,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AddDashboardCommand.h" />
+    <ClInclude Include="AddInCollabCommand.h" />
     <ClInclude Include="AddTaskCommand.h" />
+    <ClInclude Include="AsignTaskCommand.h" />
     <ClInclude Include="Collaboration.h" />
     <ClInclude Include="CollabTask.h" />
     <ClInclude Include="Command.h" />
     <ClInclude Include="CommandFactory.h" />
     <ClInclude Include="Container.hpp" />
+    <ClInclude Include="CreateCollabCommand.h" />
     <ClInclude Include="Dashboard.h" />
     <ClInclude Include="Date.h" />
     <ClInclude Include="DatePool.h" />
@@ -141,6 +144,8 @@
     <ClInclude Include="ExitCommand.h" />
     <ClInclude Include="FinishCommand.h" />
     <ClInclude Include="GetTaskCommand.h" />
+    <ClInclude Include="ListCollabsCommand.h" />
+    <ClInclude Include="ListCollabTasks.h" />
     <ClInclude Include="ListCompletedCommand.h" />
     <ClInclude Include="ListDateCommand.h" />
     <ClInclude Include="ListTasksCommand.h" />
@@ -162,11 +167,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AddDashboardCommand.cpp" />
+    <ClCompile Include="AddInCollabCommand.cpp" />
     <ClCompile Include="AddTaskCommand.cpp" />
+    <ClCompile Include="AsignTaskCommand.cpp" />
     <ClCompile Include="Collaboration.cpp" />
     <ClCompile Include="CollabTask.cpp" />
     <ClCompile Include="Command.cpp" />
     <ClCompile Include="CommandFactory.cpp" />
+    <ClCompile Include="CreateCollabCommand.cpp" />
     <ClCompile Include="Dashboard.cpp" />
     <ClCompile Include="Date.cpp" />
     <ClCompile Include="DatePool.cpp" />
@@ -174,6 +182,8 @@
     <ClCompile Include="ExitCommand.cpp" />
     <ClCompile Include="FinishCommand.cpp" />
     <ClCompile Include="GetTaskCommand.cpp" />
+    <ClCompile Include="ListCollabsCommand.cpp" />
+    <ClCompile Include="ListCollabTasks.cpp" />
     <ClCompile Include="ListCompletedCommand.cpp" />
     <ClCompile Include="ListDateCommand.cpp" />
     <ClCompile Include="ListTasksCommand.cpp" />

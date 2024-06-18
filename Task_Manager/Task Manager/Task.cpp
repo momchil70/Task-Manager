@@ -92,36 +92,6 @@ Task* Task::clone() const
 }
 
 
-std::ostream& operator<<(std::ostream& os, const Task& t)
-{
-	os << "Task name: " << t.name << std::endl;
-	os << "Task id: " << t.id << std::endl;
-
-	os << "Due date: ";
-	if (t.date.hasValue()) os << t.date.getValue() << std::endl;
-	else os << "No due date" << std::endl;
-
-	os << "Task description: " << t.description << std::endl;
-
-	os << "Status: ";
-	switch (t.s) {
-	case Status::ON_HOLD:
-		os << "ON_HOLD" << std::endl;
-		break;
-	case Status::DONE:
-		os << "DONE" << std::endl;
-		break;
-	case Status::IN_PROGRESS:
-		os << "IN PROGRESS" << std::endl;
-		break;
-	case Status::OVERDUE:
-		os << "OVERDUE" << std::endl;
-		break;
-	}
-
-	return os;
-}
-
 bool operator==(const Task& left, const Task& right)
 {
 	return (left.getTaskDate() == right.getTaskDate() &&
@@ -183,4 +153,32 @@ void Task::getFromDataBase(std::ifstream& ifs)
 	date = DatePool::getInstance().getDate(userGivenDate, name);
 	delete[] tempDate;
 	
+}
+
+void Task::print() const
+{
+	std::cout << "Task name: " << name << std::endl;
+	std::cout << "Task id: " << id << std::endl;
+
+	std::cout << "Due date: ";
+	if (date.hasValue()) std::cout << date.getValue() << std::endl;
+	else std::cout << "No due date" << std::endl;
+
+	std::cout << "Task description: " << description << std::endl;
+
+	std::cout << "Status: ";
+	switch (s) {
+	case Status::ON_HOLD:
+		std::cout << "ON_HOLD" << std::endl;
+		break;
+	case Status::DONE:
+		std::cout << "DONE" << std::endl;
+		break;
+	case Status::IN_PROGRESS:
+		std::cout << "IN PROGRESS" << std::endl;
+		break;
+	case Status::OVERDUE:
+		std::cout << "OVERDUE" << std::endl;
+		break;
+	}
 }

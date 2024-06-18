@@ -29,7 +29,8 @@ public:
 
 	User(const String& name, unsigned pass);
 
-	void add_task(const String& name, const String& date, const String& description); //tuk trqbva da si priema parametrite momche
+	void add_task(const String& name, const String& date, const String& description);
+	void asign(Task* task);
 
 	void updateTaskName(unsigned id, const String& name);
 
@@ -70,3 +71,4 @@ public:
 	void configTasks(const Date& today);
 };
 
+bool operator==(const User& lhs, const User& rhs);

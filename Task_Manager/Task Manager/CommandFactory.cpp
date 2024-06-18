@@ -26,6 +26,12 @@ Command* createCommand(const String& command, System* s)
 	if (command == "list_completed") {
 		return new ListCompletedCommand(s);
 	}
+	if (command == "list_collabs") {
+		return new ListCollabsCommand(s);
+	}
+	if (command == "list_collab_tasks") {
+		return new ListCollabTasks(s);
+	}
 	if (command == "list_dashboard") {
 		return new ListTasksCommand(s, 1);
 	}
@@ -55,6 +61,15 @@ Command* createCommand(const String& command, System* s)
 	}
 	if (command == "get_task_with_name") {
 		return new GetTaskCommand(s, 1);
+	}
+	if (command == "create_collab") {
+		return new CreateCollabCommand(s);
+	}
+	if (command == "add_user") {
+		return new AddInCollabCommand(s);
+	}
+	if (command == "asign_task"){
+		return new AsignTaskCommand(s);
 	}
 
 	throw std::exception("Non existing command!");

@@ -1,10 +1,12 @@
 #pragma once
 #include "Command.h"
+#include "ListCollabTasks.h"
 #include "LogoutCommand.h"
 #include "GetTaskCommand.h"
 #include "LoginCommand.h"
 #include "FinishCommand.h"
 #include "ExitCommand.h"
+#include "AsignTaskCommand.h"
 #include "RegisterCommand.h"
 #include "AddTaskCommand.h"
 #include "ListTasksCommand.h"
@@ -16,6 +18,9 @@
 #include "ListCompletedCommand.h"
 #include "Command.h"
 #include "DeleteTaskCommand.h"
+#include "CreateCollabCommand.h"
+#include "ListCollabsCommand.h"
+#include "AddInCollabCommand.h"
 #include "System.h"
 
 Command* createCommand(const String& command, System* s);

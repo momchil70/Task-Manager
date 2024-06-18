@@ -43,6 +43,11 @@ void User::add_task(const String& name, const String& date, const String& descri
 	temp.clearDate();
 }
 
+void User::asign(Task* task)
+{
+	tasks.add(task);
+}
+
 void User::updateTaskName(unsigned id, const String& name)
 {
 	int index = findTask(id);
@@ -103,7 +108,7 @@ void User::listTasks(const String& date) const
 		if (!tasks[i]->hasDate()) continue;
 
 		if (tasks[i]->getTaskDate() == temp) {
-			std::cout << (*tasks[i]);
+			tasks[i]->print();
 			count++;
 		}
 	}
@@ -120,7 +125,7 @@ void User::listTasks() const
 		std::cout << "No tasks found!" << std::endl;
 	}
 	for (int i = 0; i < size; i++) {
-		std::cout << *tasks[i] << std::endl;
+		tasks[i]->print();
 	}
 }
 
@@ -138,14 +143,14 @@ void User::getTask(const String& name) const
 	}
 	if (minIndex == -1) throw std::exception("There is not such task!");
 
-	std::cout << *tasks[minIndex] << std::endl;
+	tasks[minIndex]->print();
 }
 
 void User::getTask(unsigned id) const
 {
 	int size = tasks.getSize();
 	for (int i = 0; i < size; i++) {
-		if (id == tasks[i]->getId()) std::cout << *tasks[i] << std::endl;
+		if (id == tasks[i]->getId()) tasks[i]->print();
 		return;
 	}
 	throw std::exception("There is not such task!");
@@ -158,7 +163,7 @@ void User::listCompleted() const
 
 	for (int i = 0; i < size; i++) {
 		if (tasks[i]->getStatus() == Status::DONE) {
-			std::cout << (*tasks[i]);
+			tasks[i]->print();
 			count++;
 		}
 	}
@@ -186,7 +191,7 @@ void User::listDashboard() const
 	for (int i = 0; i < size; i++) {
 		const Task* temp = dash.getTask(i);
 		if (temp) {
-			std::cout << *temp << std::endl;
+			temp->print();
 		}
 		else {
 			std::cout << "Could not get the task from Dashboard at index " << i << std::endl;
@@ -319,4 +324,9 @@ void User::saveDashboard(std::ofstream& ofs) const
 		currentId = dash.getTaskId(i);
 		ofs.write(reinterpret_cast<const char*>(&currentId), sizeof(unsigned));
 	}
+}
+
+bool operator==(const User& lhs, const User& rhs)
+{
+	return lhs.getName() == rhs.getName() && lhs.getPass() == rhs.getPass();
 }

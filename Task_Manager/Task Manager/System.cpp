@@ -1,6 +1,7 @@
 #include "System.h"
 #include <fstream>
 
+
 void System::getUsersFromDatabase()
 {
 	std::ifstream ifs("database.dat", std::ios::binary);
@@ -66,6 +67,24 @@ bool System::isTakenUsername(const String& name) const
 	return false;
 }
 
+unsigned System::findCollaboration(const String& name) const
+{
+	int size = collabs.size();
+	for (int i = 0; i < size; i++) {
+		if (collabs[i].getName() == name) return i;
+	}
+	return -1;
+}
+
+unsigned System::findUser(const String& name) const
+{
+	int size = users.size();
+	for (int i = 0; i < size; i++) {
+		if (users[i].getName() == name) return i;
+	}
+	return -1;
+}
+
 System::System()
 {
 	getUsersFromDatabase();
@@ -128,6 +147,82 @@ void System::logout()
 	std::cout << "Goodbye " << users[loggedIndex].getName() << "!" << std::endl;
 	loggedIndex = -1;
 }
+
+void System::listCollaborations() const
+{
+	int size = collabs.size();
+	for (int i = 0; i < size; i++) {
+		if (collabs[i].isUserIn(users[loggedIndex])) std::cout << collabs[i].getName() << std::endl;
+	}
+}
+
+void System::createCollaboration(const String& name)
+{
+	unsigned firstFreeId = 1;
+	int size = collabs.size();
+	for (int i = 0; i < size; i++) {
+		if (firstFreeId == collabs[i].getId()) {
+			firstFreeId++;
+			i = 0;
+		}
+	}
+
+	if (loggedIndex == -1) throw std::exception("Cannot create collaboration! Nobody is logged!");
+
+	Collaboration temp(users[loggedIndex], name, firstFreeId);
+	collabs.push_back(temp);
+}
+
+
+void System::deleteCollaboration(const String& name)
+{
+	unsigned index = findCollaboration(name);
+	if (index == -1) {
+		std::cout << "Non existing collaboration!" << std::endl;
+		return;
+	}
+	collabs.erase(index);
+}
+
+void System::listCollabTasks(const String& name) const
+{
+	unsigned index = findCollaboration(name);
+	if (index == -1) {
+		std::cout << "Non existing collaboration!" << std::endl;
+		return;
+	}
+	collabs[index].listTasks();
+}
+
+void System::addUser(const String& collaboration, const String& name)
+{
+	unsigned index = findCollaboration(collaboration);
+	if (index == -1) {
+		std::cout << "Non existing collaboration!" << std::endl;
+		return;
+	}
+	unsigned userIndex = findUser(name);
+	if (userIndex == -1) {
+		std::cout << "Non existing user!" << std::endl;
+		return;
+	}
+	collabs[index].addUser(users[userIndex]);
+}
+
+void System::asignTask(const String& collab, const String& user, const String& taskName, const String& due_date, const String& description)
+{
+	unsigned index = findCollaboration(collab);
+	unsigned userIndex = findUser(user);
+	if (userIndex == -1 || index==-1 || !collabs[index].isUserIn(users[userIndex])) {
+		std::cout << "Cannot procces that command!" << std::endl;
+		return;
+	}
+	CollabTask temp(taskName, due_date, description, users[userIndex].getName());
+	collabs[index].addTask(temp);
+	users[userIndex].asign(collabs[index].getLastTask());
+}
+
+
 
 System::~System()
 {

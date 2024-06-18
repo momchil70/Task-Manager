@@ -14,7 +14,7 @@ private:
 	void copyFrom(const Container<T>& other);
 	void free();
 
-	void add(T* elem);
+	
 public:
 	Container();
 
@@ -26,6 +26,7 @@ public:
 
 	~Container() noexcept;
 	void add(const T& elem);
+	void add(T* elem);
 
 	void erase(unsigned index);
 

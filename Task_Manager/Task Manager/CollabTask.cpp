@@ -1,9 +1,10 @@
 #include "CollabTask.h"
 
-void CollabTask::asignUser(const String& username)
+CollabTask::CollabTask(const String& _name, const String& due_date, const String& _description, const String& asignee): Task(_name,due_date,_description)
 {
-	asignee = username;
+	this->asignee = asignee;
 }
+
 
 bool CollabTask::isCollabTask() const
 {
@@ -21,7 +22,7 @@ void CollabTask::saveToDataBase(std::ofstream& ofs) const
 	unsigned nameLen = name.getSize() + 1;
 	unsigned descrLen = description.getSize() + 1;
 	unsigned dateLen = userGivenDate.getSize() + 1;
-	unsigned asigneeLen = asignee.hasValue()?asignee.getValue().getSize() + 1 : 0;
+	//unsigned asigneeLen = asignee.hasValue()?asignee.getValue().getName().getSize() + 1 : 0;
 	int statusToInt = (int)(s);
 
 	ofs.write(reinterpret_cast<const char*>(&isCollab), sizeof(bool));
@@ -38,10 +39,10 @@ void CollabTask::saveToDataBase(std::ofstream& ofs) const
 	ofs.write(reinterpret_cast<const char*>(&dateLen), sizeof(unsigned));
 	ofs.write(reinterpret_cast<const char*>(userGivenDate.c_str()), dateLen);
 
-	ofs.write(reinterpret_cast<const char*>(&asigneeLen), sizeof(unsigned));
+	/*ofs.write(reinterpret_cast<const char*>(&asigneeLen), sizeof(unsigned));
 	if (asigneeLen != 0) {
-		ofs.write(reinterpret_cast<const char*>(asignee.getValue().c_str()), asigneeLen);
-	}
+		ofs.write(reinterpret_cast<const char*>(asignee.getValue().getName().c_str()), asigneeLen);
+	}*/
 }
 
 void CollabTask::getFromDataBase(std::ifstream& ifs)
@@ -79,6 +80,36 @@ void CollabTask::getFromDataBase(std::ifstream& ifs)
 	if (asigneeLen == 0) return;
 	tempAsignee = new char[asigneeLen];
 	ifs.read(reinterpret_cast<char*>(tempAsignee), asigneeLen);
-	asignee.setValue(std::move(tempAsignee));
+	//asignee.setValue(std::move(tempAsignee));
 	delete[] tempAsignee;
+}
+
+void CollabTask::print() const
+{
+	std::cout << "Task name: " << name << std::endl;
+	std::cout << "Task id: " << id << std::endl;
+
+	std::cout << "Due date: ";
+	if (date.hasValue()) std::cout << date.getValue() << std::endl;
+	else std::cout << "No due date" << std::endl;
+
+	std::cout << "Task description: " << description << std::endl;
+
+	std::cout << "Status: ";
+	switch (s) {
+	case Status::ON_HOLD:
+		std::cout << "ON_HOLD" << std::endl;
+		break;
+	case Status::DONE:
+		std::cout << "DONE" << std::endl;
+		break;
+	case Status::IN_PROGRESS:
+		std::cout << "IN PROGRESS" << std::endl;
+		break;
+	case Status::OVERDUE:
+		std::cout << "OVERDUE" << std::endl;
+		break;
+	}
+
+	std::cout << "Asignee: " << asignee << std::endl;
 }

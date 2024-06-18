@@ -15,6 +15,7 @@ class System
 
 	bool systemRunning = true;
 	int loggedIndex = -1;
+	unsigned collaborationId = 1;
 
 	void getUsersFromDatabase();
 
@@ -23,6 +24,12 @@ class System
 	void saveToDataBase() const;
 
 	bool isTakenUsername(const String& name) const;
+
+	unsigned findCollaboration(const String& name) const;
+
+	unsigned findUser(const String& name) const;
+
+	//bool isFreeId(unsigned id) const;
 public:
 	System();
 
@@ -37,6 +44,19 @@ public:
 	User& getActiveUser();
 
 	void logout();
+
+
+	void listCollaborations() const;
+
+	void createCollaboration(const String& name);
+
+	void deleteCollaboration(const String& name);
+
+	void listCollabTasks(const String& name) const;
+
+	void addUser(const String& collaboration, const String& name);
+
+	void asignTask(const String& collab, const String& user, const String& taskName, const String& due_date, const String& description);
 
 	~System();
 };

@@ -58,11 +58,11 @@ public:
 
 	virtual Task* clone() const;
 
-	friend std::ostream& operator<<(std::ostream& os, const Task& t);
-
 	virtual void saveToDataBase(std::ofstream& ofs) const;
 
 	virtual void getFromDataBase(std::ifstream& ifs);
+
+	virtual void print() const;
 };
 
 bool operator==(const Task& left, const Task& right);
