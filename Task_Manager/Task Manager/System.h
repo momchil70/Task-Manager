@@ -15,9 +15,8 @@ class System
 
 	bool systemRunning = true;
 	int loggedIndex = -1;
-	unsigned collaborationId = 1;
 
-	void getUsersFromDatabase();
+	void loadData();
 
 	void commandMode();
 
@@ -29,7 +28,9 @@ class System
 
 	unsigned findUser(const String& name) const;
 
-	//bool isFreeId(unsigned id) const;
+	void saveCollabsToDatabase(std::ofstream& ofs) const;
+
+	void getCollabsFromDatabase(std::ifstream& ifs);
 public:
 	System();
 
@@ -45,6 +46,9 @@ public:
 
 	void logout();
 
+	unsigned findFreeId() const;
+
+	Collaboration& getCollab(unsigned id);
 
 	void listCollaborations() const;
 
@@ -57,6 +61,7 @@ public:
 	void addUser(const String& collaboration, const String& name);
 
 	void asignTask(const String& collab, const String& user, const String& taskName, const String& due_date, const String& description);
+
 
 	~System();
 };

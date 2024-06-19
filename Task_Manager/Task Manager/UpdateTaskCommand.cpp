@@ -13,7 +13,7 @@ void UpdateTaskCommand::execute() const
 	std::cin >> id;
 	std::cin >> newValue;
 	try {
-		if (marker==0)
+		if (marker == 0)
 			system->getActiveUser().updateTaskName(id, newValue);
 		else
 			system->getActiveUser().updateTaskDescription(id, newValue);

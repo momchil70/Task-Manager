@@ -15,7 +15,6 @@ class User
 	String name = "";
 	unsigned pass = 0;
 
-
 	int findTask(unsigned id) const;
 	int findTask(const String& name) const;
 
@@ -29,8 +28,8 @@ public:
 
 	User(const String& name, unsigned pass);
 
-	void add_task(const String& name, const String& date, const String& description);
-	void asign(Task* task);
+	void add_task(const String& name, const String& date, const String& description, unsigned id);
+	void asign(Task* t);
 
 	void updateTaskName(unsigned id, const String& name);
 
@@ -38,7 +37,8 @@ public:
 
 	void startTask(unsigned id);
 
-	void deleteTask(unsigned id);
+	unsigned deleteTask(unsigned id);
+	void deleteTask(const Task* task);
 
 	void listTasks(const String& date) const;
 
@@ -69,6 +69,9 @@ public:
 	void configDashboard(const Date& today);
 
 	void configTasks(const Date& today);
+
+	bool containsId(unsigned id) const;
 };
 
 bool operator==(const User& lhs, const User& rhs);
+bool operator!=(const User& lhs, const User& rhs);

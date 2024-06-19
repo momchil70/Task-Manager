@@ -8,20 +8,19 @@
 
 class Dashboard
 {
-	MyVector<Task*> todo;
+	MyVector<unsigned> todo;
 
 
 	int findTask(unsigned id) const;
 public:
 
-	void addTodo(Task* t);
+	void addTodo(unsigned id);
 
 	void removeFromTodo(unsigned id);
 
 	unsigned getSize() const;
 
-	const Task* getTask(unsigned index) const;
+	unsigned getTask(unsigned index) const;
 
-	unsigned getTaskId(int index) const;
 };
 

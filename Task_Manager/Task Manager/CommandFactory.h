@@ -18,6 +18,7 @@
 #include "ListCompletedCommand.h"
 #include "Command.h"
 #include "DeleteTaskCommand.h"
+#include "DeleteCollabCommand.h"
 #include "CreateCollabCommand.h"
 #include "ListCollabsCommand.h"
 #include "AddInCollabCommand.h"

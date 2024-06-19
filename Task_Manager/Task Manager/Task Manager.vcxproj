@@ -140,6 +140,7 @@
     <ClInclude Include="Dashboard.h" />
     <ClInclude Include="Date.h" />
     <ClInclude Include="DatePool.h" />
+    <ClInclude Include="DeleteCollabCommand.h" />
     <ClInclude Include="DeleteTaskCommand.h" />
     <ClInclude Include="ExitCommand.h" />
     <ClInclude Include="FinishCommand.h" />
@@ -178,6 +179,7 @@
     <ClCompile Include="Dashboard.cpp" />
     <ClCompile Include="Date.cpp" />
     <ClCompile Include="DatePool.cpp" />
+    <ClCompile Include="DeleteCollabCommand.cpp" />
     <ClCompile Include="DeleteTaskCommand.cpp" />
     <ClCompile Include="ExitCommand.cpp" />
     <ClCompile Include="FinishCommand.cpp" />

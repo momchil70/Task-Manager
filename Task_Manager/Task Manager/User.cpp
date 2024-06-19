@@ -4,7 +4,9 @@ int User::findTask(unsigned id) const
 {
 	int size = tasks.getSize();
 	for (int i = 0; i < size; i++) {
-		if (id == tasks[i]->getId()) return i;
+		if (id == tasks[i]->getId()) {
+			return i;
+		}
 	}
 	return -1;
 }
@@ -33,9 +35,9 @@ User::User(const String& name, unsigned pass) : name(name), pass(pass)
 {
 }
 
-void User::add_task(const String& name, const String& date, const String& description)
+void User::add_task(const String& name, const String& date, const String& description, unsigned id)
 {
-	Task temp(name, date, description);
+	Task temp(name, date, description, id);
 
 	if (checkForCopy(temp)) throw std::exception("This task already exists!");
 	tasks.add(temp);
@@ -55,7 +57,6 @@ void User::updateTaskName(unsigned id, const String& name)
 	if (index == -1) {
 		throw std::exception("Non existing task");
 	}
-
 	tasks[index]->setName(name);
 }
 
@@ -66,8 +67,7 @@ void User::updateTaskDescription(unsigned id, const String& description)
 	if (index == -1) {
 		throw std::exception("Non existing task");
 	}
-
-	tasks[index]->setDescription(description);
+	tasks[index]->setDescription(name);
 }
 
 void User::startTask(unsigned id)
@@ -77,11 +77,10 @@ void User::startTask(unsigned id)
 	if (index == -1) {
 		throw std::exception("Non existing task");
 	}
-
 	tasks[index]->setStatus(Status::IN_PROGRESS);
 }
 
-void User::deleteTask(unsigned id)
+unsigned User::deleteTask(unsigned id)
 {
 	try {
 		dash.removeFromTodo(id);
@@ -93,9 +92,27 @@ void User::deleteTask(unsigned id)
 	if (index == -1) {
 		throw std::exception("Non existing task");
 	}
+	
+	unsigned collabID = tasks[index]->getCollabId();
+	if (!tasks[index]->isCollabTask()) {
+		DatePool::getInstance().removeDate(tasks[index]->getTaskDate(), tasks[index]->getName());
+		tasks.erase(index);
+	}
+	else {
+		tasks.eraseWithoutDelete(index);
+	}
 
-	DatePool::getInstance().removeDate(tasks[index]->getTaskDate(), tasks[index]->getName());
-	tasks.erase(index);
+	return collabID;
+}
+
+void User::deleteTask(const Task* task)
+{
+	int size = tasks.getSize();
+	for (int i = 0; i < size; i++) {
+		if (task == tasks[i]) {
+			tasks.erase(i);
+		}
+	}
 }
 
 void User::listTasks(const String& date) const
@@ -120,9 +137,9 @@ void User::listTasks(const String& date) const
 void User::listTasks() const
 {
 	int size = tasks.getSize();
-
 	if (size == 0) {
 		std::cout << "No tasks found!" << std::endl;
+		return;
 	}
 	for (int i = 0; i < size; i++) {
 		tasks[i]->print();
@@ -189,9 +206,10 @@ void User::listDashboard() const
 	}
 
 	for (int i = 0; i < size; i++) {
-		const Task* temp = dash.getTask(i);
-		if (temp) {
-			temp->print();
+		unsigned id = dash.getTask(i);
+		int index = findTask(id);
+		if (index != -1) {
+			tasks[index]->print();
 		}
 		else {
 			std::cout << "Could not get the task from Dashboard at index " << i << std::endl;
@@ -206,7 +224,7 @@ void User::addTaskToDashboard(unsigned id)
 	if (index == -1) throw std::exception("Task not found!");
 	if (tasks[index]->getStatus() == Status::OVERDUE) throw std::exception("Task is overdue!");
 
-	dash.addTodo(tasks[index]);
+	dash.addTodo(id);
 }
 
 void User::removeTaskFromDashboard(unsigned id)
@@ -233,9 +251,13 @@ void User::saveToDatabase(std::ofstream& ofs) const
 	ofs.write(reinterpret_cast<const char*>(&pass), sizeof(unsigned));
 
 	unsigned taskCount = tasks.getSize();
+	unsigned index = 0;
 	ofs.write(reinterpret_cast<const char*>(&taskCount), sizeof(unsigned));
-	for (int i = 0; i < taskCount; i++) {
-		tasks[i]->saveToDataBase(ofs);
+	while (index != taskCount) {
+		if (tasks[index]) {
+			tasks[index]->saveToDataBase(ofs);
+			index++;
+		}
 	}
 	saveDashboard(ofs);
 }
@@ -255,16 +277,17 @@ void User::getFromDataBase(std::ifstream& ifs)
 	ifs.read(reinterpret_cast<char*>(&taskCount), sizeof(unsigned));
 
 	for (int i = 0; i < taskCount; i++) {
+		Task* temp;
 		ifs.read(reinterpret_cast<char*>(&isCollab), sizeof(bool));
 		if (isCollab) {
-			CollabTask temp;
-			temp.getFromDataBase(ifs);
-			tasks.add(temp);
+			temp = new CollabTask();
+			temp->getFromDataBase(ifs);
+			tasks.add(std::move(temp));
 		}
 		else {
-			Task temp;
-			temp.getFromDataBase(ifs);
-			tasks.add(temp);
+			temp = new Task();
+			temp->getFromDataBase(ifs);
+			tasks.add(std::move(temp));
 		}
 	}
 	readDashboard(ifs);
@@ -275,8 +298,10 @@ void User::configDashboard(const Date& today)
 	int size = dash.getSize();
 
 	for (int i = 0; i < size; i++) {
-		if (dash.getTask(i)->getStatus() == Status::OVERDUE || dash.getTask(i)->getStatus() == Status::DONE) {
-			unsigned id = dash.getTask(i)->getId();
+		unsigned index = findTask(dash.getTask(i));
+
+		if (tasks[index]->getStatus() == Status::OVERDUE || tasks[index]->getStatus() == Status::DONE) {
+			unsigned id = dash.getTask(i);
 			dash.removeFromTodo(id);
 		}
 	}
@@ -286,14 +311,23 @@ void User::configTasks(const Date& today)
 {
 	int size = tasks.getSize();
 	for (int i = 0; i < size; i++) {
-		if (today == tasks[i]->getTaskDate() && tasks[i]->getStatus()!=Status::IN_PROGRESS) {
+		if (today == tasks[i]->getTaskDate() && tasks[i]->getStatus() != Status::IN_PROGRESS) {
 			tasks[i]->setStatus(Status::IN_PROGRESS);
-			dash.addTodo(tasks[i]);
+			dash.addTodo(tasks[i]->getId());
 		}
 		if (today > tasks[i]->getTaskDate()) {
 			tasks[i]->setStatus(Status::OVERDUE);
 		}
 	}
+}
+
+bool User::containsId(unsigned id) const
+{
+	int taskCount = tasks.getSize();
+	for (int i = 0; i < taskCount; i++) {
+		if (id == tasks[i]->getId()) return true;
+	}
+	return false;
 }
 
 
@@ -321,7 +355,7 @@ void User::saveDashboard(std::ofstream& ofs) const
 	ofs.write(reinterpret_cast<const char*>(&size), sizeof(unsigned));
 
 	for (int i = 0; i < size; i++) {
-		currentId = dash.getTaskId(i);
+		currentId = dash.getTask(i);
 		ofs.write(reinterpret_cast<const char*>(&currentId), sizeof(unsigned));
 	}
 }
@@ -329,4 +363,9 @@ void User::saveDashboard(std::ofstream& ofs) const
 bool operator==(const User& lhs, const User& rhs)
 {
 	return lhs.getName() == rhs.getName() && lhs.getPass() == rhs.getPass();
+}
+
+bool operator!=(const User& lhs, const User& rhs)
+{
+	return !(lhs == rhs);
 }

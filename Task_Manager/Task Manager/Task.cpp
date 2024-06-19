@@ -1,8 +1,7 @@
 #include "Task.h"
 
-unsigned Task::nextId = 1;
 
-Task::Task(const String& _name, const String& due_date, const String& _description)
+Task::Task(const String& _name, const String& due_date, const String& _description, unsigned id)
 {
 	userGivenDate = due_date;
 	setName(_name);
@@ -13,8 +12,7 @@ Task::Task(const String& _name, const String& due_date, const String& _descripti
 	}
 
 	s = Status::ON_HOLD;
-	id = nextId;
-	nextId++;
+	this->id = id;
 }
 
 const String& Task::getName() const
@@ -181,4 +179,14 @@ void Task::print() const
 		std::cout << "OVERDUE" << std::endl;
 		break;
 	}
+}
+
+const String& Task::getAsignee() const
+{
+	throw std::exception("No asignee");
+}
+
+unsigned Task::getCollabId() const
+{
+	return -1;
 }

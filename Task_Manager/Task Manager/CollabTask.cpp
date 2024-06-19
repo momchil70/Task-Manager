@@ -1,8 +1,10 @@
 #include "CollabTask.h"
 
-CollabTask::CollabTask(const String& _name, const String& due_date, const String& _description, const String& asignee): Task(_name,due_date,_description)
+CollabTask::CollabTask(const String& _name, const String& due_date, const String& _description, unsigned id, 
+	const String& asignee, unsigned collabID) : Task(_name, due_date, _description, id)
 {
 	this->asignee = asignee;
+	this->collaborationID = collabID;
 }
 
 
@@ -86,30 +88,17 @@ void CollabTask::getFromDataBase(std::ifstream& ifs)
 
 void CollabTask::print() const
 {
-	std::cout << "Task name: " << name << std::endl;
-	std::cout << "Task id: " << id << std::endl;
-
-	std::cout << "Due date: ";
-	if (date.hasValue()) std::cout << date.getValue() << std::endl;
-	else std::cout << "No due date" << std::endl;
-
-	std::cout << "Task description: " << description << std::endl;
-
-	std::cout << "Status: ";
-	switch (s) {
-	case Status::ON_HOLD:
-		std::cout << "ON_HOLD" << std::endl;
-		break;
-	case Status::DONE:
-		std::cout << "DONE" << std::endl;
-		break;
-	case Status::IN_PROGRESS:
-		std::cout << "IN PROGRESS" << std::endl;
-		break;
-	case Status::OVERDUE:
-		std::cout << "OVERDUE" << std::endl;
-		break;
-	}
+	Task::print();
 
 	std::cout << "Asignee: " << asignee << std::endl;
+}
+
+const String& CollabTask::getAsignee() const
+{
+	return asignee;
+}
+
+unsigned CollabTask::getCollabId() const
+{
+	return collaborationID;
 }

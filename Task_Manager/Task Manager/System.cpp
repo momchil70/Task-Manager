@@ -2,7 +2,7 @@
 #include <fstream>
 
 
-void System::getUsersFromDatabase()
+void System::loadData()
 {
 	std::ifstream ifs("database.dat", std::ios::binary);
 
@@ -16,7 +16,38 @@ void System::getUsersFromDatabase()
 		users.push_back(configurational);
 		users[i].getFromDataBase(ifs);
 	}
+	getCollabsFromDatabase(ifs);
+	ifs.close();
 }
+
+
+
+void System::saveToDataBase() const
+{
+	std::ofstream ofs("database.dat", std::ios::binary | std::ios::trunc);
+
+	if (!ofs.is_open()) throw std::exception("Error while opening file");
+
+	unsigned size = users.size();
+	ofs.write(reinterpret_cast<const char*>(&size), sizeof(unsigned));
+
+	for (int i = 0; i < size; i++) {
+		users[i].saveToDatabase(ofs);
+	}
+
+	saveCollabsToDatabase(ofs);
+	ofs.close();
+}
+
+
+void System::saveCollabsToDatabase(std::ofstream& ofs) const
+{
+}
+
+void System::getCollabsFromDatabase(std::ifstream& ifs)
+{
+}
+
 
 void System::commandMode()
 {
@@ -41,21 +72,6 @@ void System::commandMode()
 			std::cout << e.what() << std::endl;
 		}
 	}
-}
-
-void System::saveToDataBase() const
-{
-	std::ofstream ofs("database.dat", std::ios::binary | std::ios::trunc);
-
-	if (!ofs.is_open()) throw std::exception("Error while opening file");
-
-	unsigned size = users.size();
-	ofs.write(reinterpret_cast<const char*>(&size), sizeof(unsigned));
-
-	for (int i = 0; i < size; i++) {
-		users[i].saveToDatabase(ofs);
-	}
-	ofs.close();
 }
 
 bool System::isTakenUsername(const String& name) const
@@ -85,9 +101,34 @@ unsigned System::findUser(const String& name) const
 	return -1;
 }
 
+
+unsigned System::findFreeId() const
+{
+	unsigned result = 1;
+	int usersCount = users.size();
+	while (true) {
+		for (int i = 0; i < usersCount; i++) {
+			if (users[i].containsId(result)) {
+				result++;
+				break;
+			}
+			return result;
+		}
+	}
+}
+
+Collaboration& System::getCollab(unsigned id)
+{
+	int size = collabs.size();
+	for (int i = 0; i < size; i++) {
+		if (id == collabs[i].getId()) return collabs[i];
+	}
+
+}
+
 System::System()
 {
-	getUsersFromDatabase();
+	loadData();
 
 	commandMode();
 }
@@ -148,6 +189,7 @@ void System::logout()
 	loggedIndex = -1;
 }
 
+
 void System::listCollaborations() const
 {
 	int size = collabs.size();
@@ -158,6 +200,8 @@ void System::listCollaborations() const
 
 void System::createCollaboration(const String& name)
 {
+	if (loggedIndex == -1) throw std::exception("Cannot create collaboration! Nobody is logged!");
+
 	unsigned firstFreeId = 1;
 	int size = collabs.size();
 	for (int i = 0; i < size; i++) {
@@ -167,12 +211,8 @@ void System::createCollaboration(const String& name)
 		}
 	}
 
-	if (loggedIndex == -1) throw std::exception("Cannot create collaboration! Nobody is logged!");
-
-	Collaboration temp(users[loggedIndex], name, firstFreeId);
-	collabs.push_back(temp);
+	collabs.push_back(Collaboration(users[loggedIndex], name, firstFreeId));
 }
-
 
 void System::deleteCollaboration(const String& name)
 {
@@ -181,6 +221,21 @@ void System::deleteCollaboration(const String& name)
 		std::cout << "Non existing collaboration!" << std::endl;
 		return;
 	}
+	if (collabs[index].getCreator() != users[loggedIndex]) {
+		throw std::exception("You do not own the collaboration!");
+		return;
+	}
+
+	int size = collabs[index].getTasksCapacity();
+	for (int i = 0; i < size; i++) {
+		const Task* temp = collabs[index].getTask(i);
+		if (temp == nullptr) continue;
+
+		String username = temp->getAsignee();
+		unsigned userIndex = findUser(username);
+		users[userIndex].deleteTask(temp->getId());
+	}
+
 	collabs.erase(index);
 }
 
@@ -189,6 +244,10 @@ void System::listCollabTasks(const String& name) const
 	unsigned index = findCollaboration(name);
 	if (index == -1) {
 		std::cout << "Non existing collaboration!" << std::endl;
+		return;
+	}
+	if (!collabs[index].isUserIn(users[loggedIndex])) {
+		std::cout << "You do not participate in this collab!" << std::endl;
 		return;
 	}
 	collabs[index].listTasks();
@@ -217,11 +276,13 @@ void System::asignTask(const String& collab, const String& user, const String& t
 		std::cout << "Cannot procces that command!" << std::endl;
 		return;
 	}
-	CollabTask temp(taskName, due_date, description, users[userIndex].getName());
-	collabs[index].addTask(temp);
-	users[userIndex].asign(collabs[index].getLastTask());
+	unsigned freeId = this->findFreeId();
+	unsigned collabIndex = findCollaboration(collab);
+	unsigned collabId = collabs[collabIndex].getId();
+	CollabTask temp(taskName, due_date, description, freeId, users[userIndex].getName(), collabId);
+	collabs[index].addTask(&temp);
+	users[userIndex].asign(collabs[index].getTaskById(freeId));// tuk shte butash
 }
-
 
 
 System::~System()

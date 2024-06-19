@@ -71,6 +71,9 @@ Command* createCommand(const String& command, System* s)
 	if (command == "asign_task"){
 		return new AsignTaskCommand(s);
 	}
+	if (command == "delete_collab") {
+		return new DeleteCollabCommand(s);
+	}
 
 	throw std::exception("Non existing command!");
 }

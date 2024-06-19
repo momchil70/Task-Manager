@@ -16,7 +16,6 @@ enum class Status {
 class Task
 {
 protected:
-	static unsigned nextId;
 	String userGivenDate;
 	String name;
 	unsigned id = 0;
@@ -28,7 +27,7 @@ public:
 
 	Task() = default;
 
-	Task(const String& _name, const String& due_date, const String& _description);
+	Task(const String& _name, const String& due_date, const String& _description, unsigned id);
 
 	const String& getName() const;
 
@@ -63,6 +62,10 @@ public:
 	virtual void getFromDataBase(std::ifstream& ifs);
 
 	virtual void print() const;
+
+	virtual const String& getAsignee() const;
+
+	virtual unsigned getCollabId() const;
 };
 
 bool operator==(const Task& left, const Task& right);

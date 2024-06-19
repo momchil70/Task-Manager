@@ -8,7 +8,7 @@ namespace
 template <typename T>
 class MyVector
 {
-	T* _data;
+	T* _data = nullptr;
 	size_t _size = 0;
 	size_t _capacity = DEFAULT_CAP;
 

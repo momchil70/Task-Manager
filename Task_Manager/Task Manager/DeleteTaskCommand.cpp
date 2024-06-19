@@ -11,8 +11,15 @@ void DeleteTaskCommand::execute() const
 	std::cin >> id;
 
 	try {
-		system->getActiveUser().deleteTask(id);
-		std::cout << "Task deleted successfully!" << std::endl;
+		unsigned collabId = system->getActiveUser().deleteTask(id);
+		
+		if (collabId == -1)
+			std::cout << "Task deleted successfully!" << std::endl;
+	
+		else {
+			Collaboration& collab = system->getCollab(collabId);
+			collab.removeTask(id);
+		}
 	}
 	catch (std::exception& e) {
 		std::cout << e.what() << std::endl;

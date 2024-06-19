@@ -29,6 +29,7 @@ public:
 	void add(T* elem);
 
 	void erase(unsigned index);
+	void eraseWithoutDelete(unsigned index);
 
 	const T* operator[](unsigned) const;
 	T* operator[](unsigned);
@@ -122,7 +123,6 @@ void Container<T>::add(T* elem)
 	if (size == capacity) {
 		resize(capacity * 2);
 	}
-
 	data[size++] = elem;
 }
 
@@ -146,6 +146,19 @@ void Container<T>::erase(unsigned index)
 
 	size--;
 	
+	if (size == capacity / 4)
+		resize(capacity / 2);
+}
+
+template<class T>
+void Container<T>::eraseWithoutDelete(unsigned index)
+{
+	if (index >= size)
+		throw std::out_of_range("Index out of range");
+	for (int i = index; i < size - 1; i++)
+		data[i] = std::move(data[i + 1]);
+
+	size--;
 	if (size == capacity / 4)
 		resize(capacity / 2);
 }

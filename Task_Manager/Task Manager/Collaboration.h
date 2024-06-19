@@ -6,15 +6,27 @@
 class Collaboration
 {
 	String name;
-	unsigned id;
+	unsigned id = 0;
 	const User* creator = nullptr;
-	Container<Task> tasks;
+	Task** tasks = nullptr;
+	int capacity = 4;
+	int count = 0;
 	MyVector<User*> participants;
 
-	
+	unsigned findTask(unsigned id) const;
 
+	void resize(int newCap);
+	void free();
+	void copyFrom(const Collaboration& other);
+	void moveFrom(Collaboration&& other);
+	int findFreeIndex() const;
 public:
-	Collaboration() = default;
+	Collaboration();
+	Collaboration(const Collaboration& other);
+	Collaboration(Collaboration&& other);
+	Collaboration& operator=(const Collaboration& other);
+	Collaboration& operator=(Collaboration&& other);
+	~Collaboration();
 
 	bool isUserIn(const User& u) const;
 
@@ -24,12 +36,20 @@ public:
 
 	void addUser(User& user);
 
-	void addTask(const Task& t);
+	void addTask(const Task* t);
 
 	const String& getName() const;
 
 	unsigned getId() const;
 
-	Task* getLastTask();
+	unsigned getTasksCapacity() const;
+
+	const Task* getTask(unsigned index) const;
+
+	Task* getTaskById(unsigned id);
+
+	const User& getCreator() const;
+
+	void removeTask(unsigned id);
 };
 

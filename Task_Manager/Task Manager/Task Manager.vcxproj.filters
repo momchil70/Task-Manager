@@ -126,6 +126,9 @@
     <ClInclude Include="AsignTaskCommand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DeleteCollabCommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="System.cpp">
@@ -231,6 +234,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="AsignTaskCommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DeleteCollabCommand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
