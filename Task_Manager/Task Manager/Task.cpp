@@ -99,13 +99,10 @@ bool operator==(const Task& left, const Task& right)
 
 void Task::saveToDataBase(std::ofstream& ofs) const
 {
-	bool isCollab = 0;
 	unsigned nameLen = name.getSize() + 1;
 	unsigned descrLen = description.getSize() + 1;
 	unsigned dateLen = userGivenDate.getSize() + 1;
 	int statusToInt = (int)(s);
-
-	ofs.write(reinterpret_cast<const char*>(&isCollab), sizeof(bool));
 
 	ofs.write(reinterpret_cast<const char*>(&nameLen), sizeof(unsigned));
 	ofs.write(reinterpret_cast<const char*>(name.c_str()), nameLen);

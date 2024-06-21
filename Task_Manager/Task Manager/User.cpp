@@ -2,7 +2,6 @@
 
 int User::findTask(unsigned id) const
 {
-	int size = tasks.getSize();
 	for (int i = 0; i < size; i++) {
 		if (id == tasks[i]->getId()) {
 			return i;
@@ -13,7 +12,6 @@ int User::findTask(unsigned id) const
 
 int User::findTask(const String& name) const
 {
-	int size = tasks.getSize();
 	for (int i = 0; i < size; i++) {
 		if (name == tasks[i]->getName()) return i;
 	}
@@ -22,7 +20,6 @@ int User::findTask(const String& name) const
 
 bool User::checkForCopy(const Task& t)
 {
-	int size = tasks.getSize();
 	for (int i = 0; i < size; i++) {
 		if (t == *tasks[i]) {
 			return true;
@@ -31,8 +28,138 @@ bool User::checkForCopy(const Task& t)
 	return false;
 }
 
+void User::free()
+{
+	for (int i = 0; i < size; i++) {
+		if (!tasks[i]->isCollabTask()) {
+			delete tasks[i];
+		}
+	}
+
+	delete[] tasks;
+}
+
+void User::moveFrom(User&& other)
+{
+	tasks = other.tasks;
+	other.tasks = nullptr;
+
+	size = other.size;
+	capacity = other.capacity;
+
+	other.size = other.capacity = 0;
+
+	dash = std::move(other.dash);
+	pass = other.pass;
+	name = std::move(other.name);
+}
+
+void User::copyFrom(const User& other)
+{
+	tasks = new Task * [other.capacity];
+
+	for (int i = 0; i < other.size; i++) {
+		tasks[i] = other.tasks[i]->clone();
+	}
+
+	size = other.size;
+	capacity = other.capacity;
+
+	dash = other.dash;
+	name = other.name;
+	pass = other.pass;
+}
+
+void User::resize(int newCap)
+{
+	Task** temp = new Task* [newCap];
+	for (int i = 0; i < size; i++) {
+		temp[i] = tasks[i];
+	}
+
+	delete[] tasks;
+	tasks = temp;
+	capacity = newCap;
+}
+
+User::User()
+{
+	tasks = new Task * [capacity];
+}
+
+User::User(const User& other)
+{
+	copyFrom(other);
+}
+
+User::User(User&& other)
+{
+	moveFrom(std::move(other));
+}
+
+User& User::operator=(const User& other)
+{
+	if (this != &other) {
+		free();
+		copyFrom(other);
+	}
+	return *this;
+}
+
+User& User::operator=(User&& other)
+{
+	if (this != &other) {
+		free();
+		moveFrom(std::move(other));
+	}
+	return *this;
+}
+
+User::~User()
+{
+	free();
+}
+
+void User::add(Task* t)
+{
+	if (size == capacity) {
+		resize(capacity * 2);
+	}
+	tasks[size++] = t;
+}
+
+void User::add(const Task& t)
+{
+	Task* cloned = t.clone();
+	add(cloned);
+}
+
+void User::erase(int index)
+{
+	if (index >= size)
+		throw std::out_of_range("Index out of range");
+
+	delete tasks[index];
+
+	for (int i = index; i < size - 1; i++)
+		tasks[i] = std::move(tasks[i + 1]);
+
+	size--;
+}
+
+void User::eraseWithoutDelete(int index)
+{
+	if (index >= size)
+		throw std::out_of_range("Index out of range");
+	for (int i = index; i < size - 1; i++)
+		tasks[i] = std::move(tasks[i + 1]);
+
+	size--;
+}
+
 User::User(const String& name, unsigned pass) : name(name), pass(pass)
 {
+	tasks = new Task * [capacity];
 }
 
 void User::add_task(const String& name, const String& date, const String& description, unsigned id)
@@ -40,14 +167,14 @@ void User::add_task(const String& name, const String& date, const String& descri
 	Task temp(name, date, description, id);
 
 	if (checkForCopy(temp)) throw std::exception("This task already exists!");
-	tasks.add(temp);
+		add(temp);
 
 	temp.clearDate();
 }
 
 void User::asign(Task* task)
 {
-	tasks.add(task);
+	add(task);
 }
 
 void User::updateTaskName(unsigned id, const String& name)
@@ -96,10 +223,10 @@ unsigned User::deleteTask(unsigned id)
 	unsigned collabID = tasks[index]->getCollabId();
 	if (!tasks[index]->isCollabTask()) {
 		DatePool::getInstance().removeDate(tasks[index]->getTaskDate(), tasks[index]->getName());
-		tasks.erase(index);
+		erase(index);
 	}
 	else {
-		tasks.eraseWithoutDelete(index);
+		eraseWithoutDelete(index);
 	}
 
 	return collabID;
@@ -107,10 +234,9 @@ unsigned User::deleteTask(unsigned id)
 
 void User::deleteTask(const Task* task)
 {
-	int size = tasks.getSize();
 	for (int i = 0; i < size; i++) {
 		if (task == tasks[i]) {
-			tasks.erase(i);
+			erase(i);
 		}
 	}
 }
@@ -119,7 +245,6 @@ void User::listTasks(const String& date) const
 {
 	Date temp = DatePool::getInstance().getDate(date, "");
 	int count = 0;
-	int size = tasks.getSize();
 
 	for (int i = 0; i < size; i++) {
 		if (!tasks[i]->hasDate()) continue;
@@ -136,7 +261,6 @@ void User::listTasks(const String& date) const
 
 void User::listTasks() const
 {
-	int size = tasks.getSize();
 	if (size == 0) {
 		std::cout << "No tasks found!" << std::endl;
 		return;
@@ -149,7 +273,6 @@ void User::listTasks() const
 void User::getTask(const String& name) const
 {
 	int minIndex = -1;
-	int size = tasks.getSize();
 
 	for (int i = 0; i < size; i++) {
 		if (name == tasks[i]->getName()) {
@@ -165,7 +288,6 @@ void User::getTask(const String& name) const
 
 void User::getTask(unsigned id) const
 {
-	int size = tasks.getSize();
 	for (int i = 0; i < size; i++) {
 		if (id == tasks[i]->getId()) tasks[i]->print();
 		return;
@@ -175,7 +297,6 @@ void User::getTask(unsigned id) const
 
 void User::listCompleted() const
 {
-	int size = tasks.getSize();
 	int count = 0;
 
 	for (int i = 0; i < size; i++) {
@@ -246,57 +367,6 @@ unsigned User::getPass() const
 	return pass;
 }
 
-void User::saveToDatabase(std::ofstream& ofs) const
-{
-	unsigned nameLen = 0;
-	nameLen = name.getSize() + 1;
-	ofs.write(reinterpret_cast<const char*>(&nameLen), sizeof(unsigned));
-	ofs.write(reinterpret_cast<const char*>(name.c_str()), nameLen);
-	ofs.write(reinterpret_cast<const char*>(&pass), sizeof(unsigned));
-
-	unsigned taskCount = tasks.getSize();
-	unsigned index = 0;
-	ofs.write(reinterpret_cast<const char*>(&taskCount), sizeof(unsigned));
-	while (index != taskCount) {
-		if (tasks[index]) {
-			tasks[index]->saveToDataBase(ofs);
-			index++;
-		}
-	}
-	saveDashboard(ofs);
-}
-
-void User::getFromDataBase(std::ifstream& ifs)
-{
-	bool isCollab = false;
-	unsigned nameLen = 0, taskCount = 0;
-	char* tempName;
-
-	ifs.read(reinterpret_cast<char*>(&nameLen), sizeof(unsigned));
-	tempName = new char[nameLen];
-	ifs.read(reinterpret_cast<char*>(tempName), nameLen);
-	name = tempName;
-
-	ifs.read(reinterpret_cast<char*>(&pass), sizeof(unsigned));
-	ifs.read(reinterpret_cast<char*>(&taskCount), sizeof(unsigned));
-
-	for (int i = 0; i < taskCount; i++) {
-		Task* temp;
-		ifs.read(reinterpret_cast<char*>(&isCollab), sizeof(bool));
-		if (isCollab) {
-			temp = new CollabTask();
-			temp->getFromDataBase(ifs);
-			tasks.add(std::move(temp));
-		}
-		else {
-			temp = new Task();
-			temp->getFromDataBase(ifs);
-			tasks.add(std::move(temp));
-		}
-	}
-	readDashboard(ifs);
-}
-
 void User::configDashboard(const Date& today)
 {
 	int size = dash.getSize();
@@ -313,7 +383,6 @@ void User::configDashboard(const Date& today)
 
 void User::configTasks(const Date& today)
 {
-	int size = tasks.getSize();
 	for (int i = 0; i < size; i++) {
 		if (today == tasks[i]->getTaskDate() && tasks[i]->getStatus() != Status::IN_PROGRESS) {
 			tasks[i]->setStatus(Status::IN_PROGRESS);
@@ -327,8 +396,7 @@ void User::configTasks(const Date& today)
 
 bool User::containsId(unsigned id) const
 {
-	int taskCount = tasks.getSize();
-	for (int i = 0; i < taskCount; i++) {
+	for (int i = 0; i < size; i++) {
 		if (id == tasks[i]->getId()) return true;
 	}
 	return false;
@@ -372,4 +440,58 @@ bool operator==(const User& lhs, const User& rhs)
 bool operator!=(const User& lhs, const User& rhs)
 {
 	return !(lhs == rhs);
+}
+
+
+
+void User::saveToDatabase(std::ofstream& ofs) const
+{
+	unsigned nameLen = 0;
+	nameLen = name.getSize() + 1;
+	ofs.write(reinterpret_cast<const char*>(&nameLen), sizeof(unsigned));
+	ofs.write(reinterpret_cast<const char*>(name.c_str()), nameLen);
+	ofs.write(reinterpret_cast<const char*>(&pass), sizeof(unsigned));
+}
+
+void User::getFromDataBase(std::ifstream& ifs)
+{
+	unsigned nameLen = 0;
+	char* tempName;
+
+	ifs.read(reinterpret_cast<char*>(&nameLen), sizeof(unsigned));
+	tempName = new char[nameLen];
+	ifs.read(reinterpret_cast<char*>(tempName), nameLen);
+	name = tempName;
+	delete[] tempName;
+
+	ifs.read(reinterpret_cast<char*>(&pass), sizeof(unsigned));
+}
+
+void User::savePersonalTasks(std::ofstream& ofs) const
+{
+	unsigned personalTasks = 0;
+	for (int i = 0; i < size; i++) {
+		if (!tasks[i]->isCollabTask()) personalTasks++;
+	}
+
+	ofs.write(reinterpret_cast<const char*>(&personalTasks), sizeof(unsigned));
+
+	for (int i=0;i<personalTasks;i++) {
+		if (tasks[i] && !tasks[i]->isCollabTask()) {
+			tasks[i]->saveToDataBase(ofs);
+		}
+	}
+}
+
+void User::getPersonalTasks(std::ifstream& ifs)
+{
+	unsigned tasksCount = 0;
+	ifs.read(reinterpret_cast<char*>(&tasksCount), sizeof(unsigned));
+
+	for (int i = 0; i < tasksCount; i++) {
+		Task* temp;
+		temp = new Task();
+		temp->getFromDataBase(ifs);
+		add(std::move(temp));
+	}
 }

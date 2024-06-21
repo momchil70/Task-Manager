@@ -51,5 +51,9 @@ public:
 	const User& getCreator() const;
 
 	void removeTask(unsigned id);
+
+
+
+	void saveToDatabase(std::ofstream& ofs) const;
 };
 

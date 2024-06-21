@@ -4,27 +4,42 @@
 
 void System::loadData()
 {
-	std::ifstream ifs("database.dat", std::ios::binary);
-
+	std::ifstream ifs("users.dat", std::ios::binary);
 	if (!ifs.is_open()) throw std::exception("Error while opening file");
-
+	//getUsers ---------------------------------
 	unsigned usersCount = 0;
 	ifs.read(reinterpret_cast<char*>(&usersCount), sizeof(unsigned));
 	User configurational;
-
 	for (int i = 0; i < usersCount; i++) {
 		users.push_back(configurational);
 		users[i].getFromDataBase(ifs);
 	}
-	getCollabsFromDatabase(ifs);
 	ifs.close();
+	//get usertasks-----------------------------
+	std::ifstream ifs1("usertasks.dat", std::ios::binary);
+	if (!ifs1.is_open()) throw std::exception("Error while opening file");
+
+	for (int i = 0; i < users.size(); i++) {
+		users[i].getPersonalTasks(ifs1);
+	}
+
+	//get collabs--------------------------------
+	std::ifstream ifs2("collabs.dat", std::ios::binary);
+	if (!ifs2.is_open()) throw std::exception("Error while opening file");
+	getCollabsFromDatabase(ifs2);
+	ifs2.close();
+
+	//u need to load the dashboard of every user
+	for (int i = 0; i < users.size(); i++) {
+		users[i].readDashboard(ifs1);
+	}
 }
 
 
 
 void System::saveToDataBase() const
 {
-	std::ofstream ofs("database.dat", std::ios::binary | std::ios::trunc);
+	std::ofstream ofs("users.dat", std::ios::binary | std::ios::trunc);
 
 	if (!ofs.is_open()) throw std::exception("Error while opening file");
 
@@ -34,18 +49,86 @@ void System::saveToDataBase() const
 	for (int i = 0; i < size; i++) {
 		users[i].saveToDatabase(ofs);
 	}
-
-	saveCollabsToDatabase(ofs);
 	ofs.close();
+	// DOTUK E FAILUT users.dat ----------------------------------------------------------
+
+	std::ofstream ofs1("usertasks.dat", std::ios::binary | std::ios::trunc);
+
+	if (!ofs1.is_open()) throw std::exception("Error while opening file");
+	for (int i = 0; i < size; i++) {
+		users[i].savePersonalTasks(ofs1);
+	}
+	for (int i = 0; i < size; i++) {
+		users[i].saveDashboard(ofs1);
+	}
+	ofs1.close();
+	// DOTUK E FAILUT usertasks.dat -------------------------------------------------------
+	std::ofstream ofs2("collabs.dat", std::ios::binary | std::ios::trunc);
+
+	if (!ofs2.is_open()) throw std::exception("Error while opening file");
+
+	saveCollabsToDatabase(ofs2);
+	ofs2.close();
 }
 
 
 void System::saveCollabsToDatabase(std::ofstream& ofs) const
 {
+	unsigned collabsCount = collabs.size();
+	ofs.write(reinterpret_cast<const char*>(&collabsCount), sizeof(unsigned));
+
+	for (int i = 0; i < collabsCount; i++) {
+		collabs[i].saveToDatabase(ofs);
+	}
 }
 
 void System::getCollabsFromDatabase(std::ifstream& ifs)
 {
+	unsigned collabsCount = collabs.size();
+	ifs.read(reinterpret_cast<char*>(&collabsCount), sizeof(unsigned));
+	for (int i = 0; i < collabsCount; i++) {
+		unsigned nameLen = 0, id = 0;
+		char* creatorName; char* name;
+		//getting name and id of the collab
+		ifs.read(reinterpret_cast<char*>(&nameLen), sizeof(unsigned));
+		name = new char[nameLen];
+		ifs.read(reinterpret_cast<char*>(name), nameLen);
+
+		ifs.read(reinterpret_cast<char*>(&id), sizeof(unsigned));
+		//getting creator
+		ifs.read(reinterpret_cast<char*>(&nameLen), sizeof(unsigned));
+		creatorName = new char[nameLen];
+		ifs.read(reinterpret_cast<char*>(creatorName), nameLen);
+		User& creator = users[findUser(creatorName)];
+		delete[] creatorName;
+		//pushing the collaboration in the collection
+		Collaboration temp(creator, name, id);
+		collabs.push_back(std::move(temp));		//it takes the name. We do not have to delete it. It is already nullptr
+
+		//loading the participants
+		unsigned participantsCount = 0; char* participantName = nullptr;
+		ifs.read(reinterpret_cast<char*>(&participantsCount), sizeof(unsigned));
+		for (int j = 0; j < participantsCount; j++) {
+			ifs.read(reinterpret_cast<char*>(&nameLen), sizeof(unsigned));
+			participantName = new char[nameLen];
+			ifs.read(reinterpret_cast<char*>(participantName), nameLen);
+			int index = findUser(participantName); //get the participant
+			delete[] participantName;
+			collabs[i].addUser(users[index]);
+		}
+		//loading the tasks and asigning them to the users
+		unsigned taskCount;
+		ifs.read(reinterpret_cast<char*>(&taskCount), sizeof(unsigned));
+		for (int j = 0; j < taskCount; j++) {
+			CollabTask tempTask;
+			tempTask.getFromDataBase(ifs);
+			collabs[i].addTask(&tempTask);
+			String name = tempTask.getAsignee();
+			int index = findUser(name);
+			unsigned id = tempTask.getId();
+			users[index].asign(collabs[i].getTaskById(id));
+		}
+	}
 }
 
 
@@ -112,8 +195,8 @@ unsigned System::findFreeId() const
 				result++;
 				break;
 			}
-			return result;
 		}
+		return result;
 	}
 }
 

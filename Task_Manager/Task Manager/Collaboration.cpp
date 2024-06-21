@@ -25,6 +25,7 @@ void Collaboration::free()
 	if (tasks) {
 		for (int i = 0; i < capacity; i++) {
 			delete tasks[i];
+			tasks[i] = nullptr;
 		}
 	}
 
@@ -148,8 +149,7 @@ void Collaboration::addTask(const Task* t)
 
 	
 	tasks[firstFreeIndex] = t->clone();
-	
-	
+	count++;
 }
 
 const String& Collaboration::getName() const
@@ -193,4 +193,33 @@ void Collaboration::removeTask(unsigned id)
 
 	delete tasks[index];
 	tasks[index] = nullptr;
+
+	count--;
+}
+
+void Collaboration::saveToDatabase(std::ofstream& ofs) const
+{
+	unsigned nameLen = name.getSize() + 1;
+	ofs.write(reinterpret_cast<const char*>(&nameLen), sizeof(unsigned));
+	ofs.write(reinterpret_cast<const char*>(name.c_str()), nameLen);
+	//saving id
+	ofs.write(reinterpret_cast<const char*>(&id), sizeof(unsigned));
+	//saving creator
+	nameLen = creator->getName().getSize() + 1;
+	ofs.write(reinterpret_cast<const char*>(&nameLen), sizeof(unsigned));
+	ofs.write(reinterpret_cast<const char*>(creator->getName().c_str()), nameLen);
+	//saving participants
+	unsigned participantsCount = participants.size();
+	ofs.write(reinterpret_cast<const char*>(&participantsCount), sizeof(unsigned));
+	for (int i = 0; i < participantsCount; i++) {
+		nameLen = participants[i]->getName().getSize() + 1;
+		ofs.write(reinterpret_cast<const char*>(&nameLen), sizeof(unsigned));
+		ofs.write(reinterpret_cast<const char*>(participants[i]->getName().c_str()), nameLen);
+	}
+	//saving tasks
+
+	ofs.write(reinterpret_cast<const char*>(&count), sizeof(unsigned));
+	for (int i = 0; i < count; i++) {
+		if (tasks[i]) tasks[i]->saveToDataBase(ofs);
+	}
 }

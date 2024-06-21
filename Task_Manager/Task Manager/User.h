@@ -10,7 +10,10 @@
 
 class User
 {
-	Container<Task> tasks;
+	Task** tasks;
+	int size = 0;
+	int capacity = 4;
+
 	Dashboard dash;
 	String name = "";
 	unsigned pass = 0;
@@ -20,11 +23,22 @@ class User
 
 	bool checkForCopy(const Task& t);
 
-	void readDashboard(std::ifstream& ifs);
-
-	void saveDashboard(std::ofstream& ofs) const;
+	void free();
+	void moveFrom(User&& other);
+	void copyFrom(const User& other);
+	void resize(int newCap);
 public:
-	User() = default;
+	User();
+	User(const User& other);
+	User(User&& other);
+	User& operator=(const User& other);
+	User& operator=(User&& other);
+	~User();
+
+	void add(Task* t);
+	void add(const Task& t);
+	void erase(int index);
+	void eraseWithoutDelete(int index);
 
 	User(const String& name, unsigned pass);
 
@@ -71,6 +85,15 @@ public:
 	void configTasks(const Date& today);
 
 	bool containsId(unsigned id) const;
+
+
+	void savePersonalTasks(std::ofstream& ofs) const;
+
+	void getPersonalTasks(std::ifstream& ifs);
+
+	void readDashboard(std::ifstream& ifs);
+
+	void saveDashboard(std::ofstream& ofs) const;
 };
 
 bool operator==(const User& lhs, const User& rhs);

@@ -10,8 +10,8 @@
 
 class System
 {
-	MyVector<User> users;
 	MyVector<Collaboration> collabs;
+	MyVector<User> users;
 
 	bool systemRunning = true;
 	int loggedIndex = -1;

@@ -26,6 +26,8 @@ void CollabTask::saveToDataBase(std::ofstream& ofs) const
 
 	ofs.write(reinterpret_cast<const char*>(&asigneeLen), sizeof(unsigned));
 	ofs.write(reinterpret_cast<const char*>(asignee.c_str()), asigneeLen);
+
+	ofs.write(reinterpret_cast<const char*>(&collaborationID), sizeof(unsigned));
 }
 
 void CollabTask::getFromDataBase(std::ifstream& ifs)
@@ -40,6 +42,8 @@ void CollabTask::getFromDataBase(std::ifstream& ifs)
 	ifs.read(reinterpret_cast<char*>(tempAsignee), asigneeLen);
 	asignee = tempAsignee;
 	delete[] tempAsignee;
+
+	ifs.read(reinterpret_cast<char*>(&collaborationID), sizeof(unsigned));
 }
 
 void CollabTask::print() const
