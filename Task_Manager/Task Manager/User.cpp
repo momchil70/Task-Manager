@@ -194,6 +194,10 @@ void User::finishTask(unsigned id)
 	if (index == -1) throw std::exception("Task not found!");
 
 	tasks[index]->setStatus(Status::DONE);
+	try {
+		removeTaskFromDashboard(id);
+	}
+	catch (...) {}
 }
 
 

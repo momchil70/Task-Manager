@@ -22,8 +22,6 @@ class System
 
 	void saveToDataBase() const;
 
-	bool isTakenUsername(const String& name) const;
-
 	unsigned findCollaboration(const String& name) const;
 
 	unsigned findUser(const String& name) const;
@@ -33,6 +31,8 @@ class System
 	void getCollabsFromDatabase(std::ifstream& ifs);
 public:
 	System();
+
+	bool isTakenUsername(const String& name) const;
 
 	void login(const String& name, unsigned pass);
 
@@ -62,6 +62,7 @@ public:
 
 	void asignTask(const String& collab, const String& user, const String& taskName, const String& due_date, const String& description);
 
+	bool hasLoggedUser() const;
 
 	~System();
 };

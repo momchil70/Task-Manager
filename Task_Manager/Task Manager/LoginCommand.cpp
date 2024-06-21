@@ -11,5 +11,9 @@ void LoginCommand::execute() const
 	unsigned pass;
 	std::cin >> username;
 	std::cin >> pass;
+	if (system->hasLoggedUser()) {
+		std::cout << "Logout first!" << std::endl;
+		return;
+	}
 	system->login(username, pass);
 }

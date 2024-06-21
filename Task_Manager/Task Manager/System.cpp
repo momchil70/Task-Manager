@@ -12,7 +12,7 @@ void System::loadData()
 	ifs.read(reinterpret_cast<char*>(&usersCount), sizeof(unsigned));
 	User configurational;
 
-	for (int i = 0; i < usersCount; i++){
+	for (int i = 0; i < usersCount; i++) {
 		users.push_back(configurational);
 		users[i].getFromDataBase(ifs);
 	}
@@ -257,12 +257,12 @@ void System::addUser(const String& collaboration, const String& name)
 {
 	unsigned index = findCollaboration(collaboration);
 	if (index == -1) {
-		std::cout << "Non existing collaboration!" << std::endl;
+		throw std::exception("Non existing collaboration!");
 		return;
 	}
 	unsigned userIndex = findUser(name);
 	if (userIndex == -1) {
-		std::cout << "Non existing user!" << std::endl;
+		throw std::exception("Non existing user!");
 		return;
 	}
 	collabs[index].addUser(users[userIndex]);
@@ -272,7 +272,7 @@ void System::asignTask(const String& collab, const String& user, const String& t
 {
 	unsigned index = findCollaboration(collab);
 	unsigned userIndex = findUser(user);
-	if (userIndex == -1 || index==-1 || !collabs[index].isUserIn(users[userIndex])) {
+	if (userIndex == -1 || index == -1 || !collabs[index].isUserIn(users[userIndex])) {
 		std::cout << "Cannot procces that command!" << std::endl;
 		return;
 	}
@@ -282,6 +282,11 @@ void System::asignTask(const String& collab, const String& user, const String& t
 	CollabTask temp(taskName, due_date, description, freeId, users[userIndex].getName(), collabId);
 	collabs[index].addTask(&temp);
 	users[userIndex].asign(collabs[index].getTaskById(freeId));// tuk shte butash
+}
+
+bool System::hasLoggedUser() const
+{
+	return loggedIndex != -1;
 }
 
 

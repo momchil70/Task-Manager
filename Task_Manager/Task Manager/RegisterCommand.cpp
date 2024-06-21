@@ -12,5 +12,9 @@ void RegisterCommand::execute() const
 	std::cin >> username;
 	std::cin >> pass;
 
+	if (system->isTakenUsername(username)) {
+		std::cout << "User with the same name already exists!" << std::endl;
+		return;
+	}
 	system->addUser(User(username, pass));
 }
