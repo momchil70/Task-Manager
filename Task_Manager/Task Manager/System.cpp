@@ -1,12 +1,10 @@
 #include "System.h"
 #include <fstream>
 
-
-void System::loadData()
+void System::loadUsers()
 {
 	std::ifstream ifs("users.dat", std::ios::binary);
 	if (!ifs.is_open()) throw std::exception("Error while opening file");
-	//getUsers ---------------------------------
 	unsigned usersCount = 0;
 	ifs.read(reinterpret_cast<char*>(&usersCount), sizeof(unsigned));
 	User configurational;
@@ -14,22 +12,33 @@ void System::loadData()
 		users.push_back(configurational);
 		users[i].getFromDataBase(ifs);
 	}
-	ifs.close();
-	//get usertasks-----------------------------
-	std::ifstream ifs1("usertasks.dat", std::ios::binary);
-	if (!ifs1.is_open()) throw std::exception("Error while opening file");
+}
 
+void System::loadUserTasks(std::ifstream& ifs1)
+{
 	for (int i = 0; i < users.size(); i++) {
 		users[i].getPersonalTasks(ifs1);
 	}
+}
 
-	//get collabs--------------------------------
+void System::loadCollabs()
+{
 	std::ifstream ifs2("collabs.dat", std::ios::binary);
 	if (!ifs2.is_open()) throw std::exception("Error while opening file");
 	getCollabsFromDatabase(ifs2);
 	ifs2.close();
+}
 
-	//u need to load the dashboard of every user
+void System::loadData()
+{
+	loadUsers();
+	
+	std::ifstream ifs1("usertasks.dat", std::ios::binary);
+	if (!ifs1.is_open()) throw std::exception("Error while opening file");
+	loadUserTasks(ifs1);
+
+	loadCollabs();
+	//we need to load dashboard after we have loaded the collab tasks also
 	for (int i = 0; i < users.size(); i++) {
 		users[i].readDashboard(ifs1);
 	}
@@ -37,7 +46,17 @@ void System::loadData()
 
 
 
+
 void System::saveToDataBase() const
+{
+	saveUsers();
+
+	saveUserTasks();
+	
+	saveCollabs();
+}
+
+void System::saveUsers() const
 {
 	std::ofstream ofs("users.dat", std::ios::binary | std::ios::trunc);
 
@@ -50,8 +69,11 @@ void System::saveToDataBase() const
 		users[i].saveToDatabase(ofs);
 	}
 	ofs.close();
-	// DOTUK E FAILUT users.dat ----------------------------------------------------------
+}
 
+void System::saveUserTasks() const
+{
+	unsigned size = users.size();
 	std::ofstream ofs1("usertasks.dat", std::ios::binary | std::ios::trunc);
 
 	if (!ofs1.is_open()) throw std::exception("Error while opening file");
@@ -62,7 +84,10 @@ void System::saveToDataBase() const
 		users[i].saveDashboard(ofs1);
 	}
 	ofs1.close();
-	// DOTUK E FAILUT usertasks.dat -------------------------------------------------------
+}
+
+void System::saveCollabs() const
+{
 	std::ofstream ofs2("collabs.dat", std::ios::binary | std::ios::trunc);
 
 	if (!ofs2.is_open()) throw std::exception("Error while opening file");
@@ -88,47 +113,66 @@ void System::getCollabsFromDatabase(std::ifstream& ifs)
 	ifs.read(reinterpret_cast<char*>(&collabsCount), sizeof(unsigned));
 	for (int i = 0; i < collabsCount; i++) {
 		unsigned nameLen = 0, id = 0;
-		char* creatorName; char* name;
+		char* name;
 		//getting name and id of the collab
 		ifs.read(reinterpret_cast<char*>(&nameLen), sizeof(unsigned));
 		name = new char[nameLen];
 		ifs.read(reinterpret_cast<char*>(name), nameLen);
-
 		ifs.read(reinterpret_cast<char*>(&id), sizeof(unsigned));
+
 		//getting creator
-		ifs.read(reinterpret_cast<char*>(&nameLen), sizeof(unsigned));
-		creatorName = new char[nameLen];
-		ifs.read(reinterpret_cast<char*>(creatorName), nameLen);
-		User& creator = users[findUser(creatorName)];
-		delete[] creatorName;
+		User& creator = getCreator(ifs);
+		
 		//pushing the collaboration in the collection
 		Collaboration temp(creator, name, id);
 		collabs.push_back(std::move(temp));		//it takes the name. We do not have to delete it. It is already nullptr
 
-		//loading the participants
-		unsigned participantsCount = 0; char* participantName = nullptr;
-		ifs.read(reinterpret_cast<char*>(&participantsCount), sizeof(unsigned));
-		for (int j = 0; j < participantsCount; j++) {
-			ifs.read(reinterpret_cast<char*>(&nameLen), sizeof(unsigned));
-			participantName = new char[nameLen];
-			ifs.read(reinterpret_cast<char*>(participantName), nameLen);
-			int index = findUser(participantName); //get the participant
-			delete[] participantName;
-			collabs[i].addUser(users[index]);
-		}
-		//loading the tasks and asigning them to the users
-		unsigned taskCount;
-		ifs.read(reinterpret_cast<char*>(&taskCount), sizeof(unsigned));
-		for (int j = 0; j < taskCount; j++) {
-			CollabTask tempTask;
-			tempTask.getFromDataBase(ifs);
-			collabs[i].addTask(&tempTask);
-			String name = tempTask.getAsignee();
-			int index = findUser(name);
-			unsigned id = tempTask.getId();
-			users[index].asign(collabs[i].getTaskById(id));
-		}
+		getCollabParticipants(i, ifs);
+		
+		getCollabTasks(i, ifs);
 	}
+}
+
+void System::getCollabTasks(unsigned collabIndex, std::ifstream& ifs)
+{
+	unsigned taskCount;
+	ifs.read(reinterpret_cast<char*>(&taskCount), sizeof(unsigned));
+	for (int j = 0; j < taskCount; j++) {
+		CollabTask tempTask;
+		tempTask.getFromDataBase(ifs);
+		collabs[collabIndex].addTask(&tempTask);
+		String name = tempTask.getAsignee();
+		int index = findUser(name);
+		unsigned id = tempTask.getId();
+		users[index].asign(collabs[collabIndex].getTaskById(id));
+	}
+}
+
+void System::getCollabParticipants(unsigned collabIndex, std::ifstream& ifs)
+{
+	char* participantName = nullptr;
+	unsigned participantsCount = 0, nameLen = 0; 
+	ifs.read(reinterpret_cast<char*>(&participantsCount), sizeof(unsigned));
+	for (int j = 0; j < participantsCount; j++) {
+		ifs.read(reinterpret_cast<char*>(&nameLen), sizeof(unsigned));
+		participantName = new char[nameLen];
+		ifs.read(reinterpret_cast<char*>(participantName), nameLen);
+		int index = findUser(participantName);
+		delete[] participantName;
+		collabs[collabIndex].addUser(users[index]);
+	}
+}
+
+User& System::getCreator(std::ifstream& ifs)
+{
+	unsigned nameLen = 0;
+	char* creatorName = nullptr;
+	ifs.read(reinterpret_cast<char*>(&nameLen), sizeof(unsigned));
+	creatorName = new char[nameLen];
+	ifs.read(reinterpret_cast<char*>(creatorName), nameLen);
+	User& creator = users[findUser(creatorName)];
+	delete[] creatorName;
+	return creator;
 }
 
 
@@ -284,6 +328,9 @@ void System::listCollaborations() const
 void System::createCollaboration(const String& name)
 {
 	if (loggedIndex == -1) throw std::exception("Cannot create collaboration! Nobody is logged!");
+
+	unsigned check = findCollaboration(name);
+	if (check != -1) throw std::exception("There is collaboration with this name already!");
 
 	unsigned firstFreeId = 1;
 	int size = collabs.size();

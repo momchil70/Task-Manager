@@ -17,10 +17,16 @@ class System
 	int loggedIndex = -1;
 
 	void loadData();
+	void loadUsers();
+	void loadUserTasks(std::ifstream& ifs);
+	void loadCollabs();
 
 	void commandMode();
 
 	void saveToDataBase() const;
+	void saveUsers() const;
+	void saveUserTasks() const;
+	void saveCollabs() const;
 
 	unsigned findCollaboration(const String& name) const;
 
@@ -29,6 +35,9 @@ class System
 	void saveCollabsToDatabase(std::ofstream& ofs) const;
 
 	void getCollabsFromDatabase(std::ifstream& ifs);
+	void getCollabTasks(unsigned collabIndex, std::ifstream& ifs);
+	void getCollabParticipants(unsigned collabIndex, std::ifstream& ifs);
+	User& getCreator(std::ifstream& ifs);
 public:
 	System();
 
