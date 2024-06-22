@@ -10,11 +10,14 @@ void AddTaskCommand::execute() const
 	String taskName;
 	String date;
 	String description;
+	char buffer[1024];
 	unsigned id;
 	
 	std::cin >> taskName;
 	std::cin >> date;
-	std::cin >> description;
+	std::cin.ignore();
+	std::cin.getline(buffer, 1024);
+	description = buffer;
 	id = system->findFreeId();
 
 	try {

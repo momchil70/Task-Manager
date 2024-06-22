@@ -233,15 +233,15 @@ unsigned System::findFreeId() const
 {
 	unsigned result = 1;
 	int usersCount = users.size();
-	while (true) {
-		for (int i = 0; i < usersCount; i++) {
-			if (users[i].containsId(result)) {
-				result++;
-				break;
-			}
+	
+	for (int i = 0; i < usersCount; i++) {
+		if (users[i].containsId(result)) {
+			result++;
+			i = -1;
 		}
-		return result;
 	}
+	return result;
+	
 }
 
 Collaboration& System::getCollab(unsigned id)

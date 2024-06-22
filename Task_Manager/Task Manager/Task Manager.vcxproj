@@ -135,7 +135,6 @@
     <ClInclude Include="CollabTask.h" />
     <ClInclude Include="Command.h" />
     <ClInclude Include="CommandFactory.h" />
-    <ClInclude Include="Container.hpp" />
     <ClInclude Include="CreateCollabCommand.h" />
     <ClInclude Include="Dashboard.h" />
     <ClInclude Include="Date.h" />

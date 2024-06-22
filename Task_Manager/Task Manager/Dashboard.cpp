@@ -22,7 +22,6 @@ void Dashboard::removeFromTodo(unsigned id)
 
 
 	todo.erase(index);
-	std::cout << "Task removed successfully from dashboard!" << std::endl;
 }
 
 unsigned Dashboard::getSize() const

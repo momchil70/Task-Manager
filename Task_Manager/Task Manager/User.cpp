@@ -243,6 +243,7 @@ void User::deleteTask(const Task* task)
 
 void User::listTasks(const String& date) const
 {
+	std::cout << std::endl;
 	Date temp = DatePool::getInstance().getDate(date, "");
 	int count = 0;
 
@@ -251,6 +252,7 @@ void User::listTasks(const String& date) const
 
 		if (tasks[i]->getTaskDate() == temp) {
 			tasks[i]->print();
+			std::cout << std::endl;
 			count++;
 		}
 	}
@@ -265,8 +267,10 @@ void User::listTasks() const
 		std::cout << "No tasks found!" << std::endl;
 		return;
 	}
+	std::cout << std::endl;
 	for (int i = 0; i < size; i++) {
 		tasks[i]->print();
+		std::cout << std::endl;
 	}
 }
 
@@ -288,20 +292,24 @@ void User::getTask(const String& name) const
 
 void User::getTask(unsigned id) const
 {
+	bool marker = 0;
 	for (int i = 0; i < size; i++) {
-		if (id == tasks[i]->getId()) tasks[i]->print();
-		return;
+		if (id == tasks[i]->getId()) {
+			tasks[i]->print();
+			marker = 1;
+		}
 	}
-	throw std::exception("There is not such task!");
+	if (!marker) throw std::exception("There is not such task!");
 }
 
 void User::listCompleted() const
 {
 	int count = 0;
-
+	std::cout << std::endl;
 	for (int i = 0; i < size; i++) {
 		if (tasks[i]->getStatus() == Status::DONE) {
 			tasks[i]->print();
+			std::cout << std::endl;
 			count++;
 		}
 	}
@@ -328,13 +336,15 @@ void User::listDashboard() const
 
 	if (size == 0) {
 		std::cout << "No tasks found in dashboard!" << std::endl;
+		return;
 	}
-
+	std::cout << std::endl;
 	for (int i = 0; i < size; i++) {
 		unsigned id = dash.getTask(i);
 		int index = findTask(id);
 		if (index != -1) {
 			tasks[index]->print();
+			std::cout << std::endl;
 		}
 		else {
 			std::cout << "Could not get the task from Dashboard at index " << i << std::endl;
