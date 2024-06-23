@@ -30,6 +30,11 @@ Status Task::getStatus() const
 	return s;
 }
 
+const String& Task::getUserGiven() const
+{
+	return userGivenDate;
+}
+
 unsigned Task::getId() const
 {
 	return id;
@@ -145,9 +150,10 @@ void Task::getFromDataBase(std::ifstream& ifs)
 	tempDate = new char[dateLen];
 	ifs.read(reinterpret_cast<char*>(tempDate), dateLen);
 	userGivenDate = tempDate;
-	date = DatePool::getInstance().getDate(userGivenDate, name);
+	if (userGivenDate != "no") {
+		date = DatePool::getInstance().getDate(userGivenDate, name);
+	}
 	delete[] tempDate;
-	
 }
 
 void Task::print() const

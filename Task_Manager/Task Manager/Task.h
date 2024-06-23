@@ -35,6 +35,8 @@ public:
 
 	Status getStatus() const;
 
+	const String& getUserGiven() const;
+
 	unsigned getId() const;
 
 	void setStatus(Status _s);

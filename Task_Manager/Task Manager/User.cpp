@@ -20,7 +20,11 @@ int User::findTask(const String& name) const
 
 bool User::checkForCopy(const Task& t)
 {
+	if (t.getUserGiven() == "no") return false;
+
 	for (int i = 0; i < size; i++) {
+		if (tasks[i]->getUserGiven() == "no") continue;
+
 		if (t == *tasks[i]) {
 			return true;
 		}
@@ -398,6 +402,8 @@ void User::configDashboard(const Date& today)
 void User::configTasks(const Date& today)
 {
 	for (int i = 0; i < size; i++) {
+		if (tasks[i]->getUserGiven() == "no") continue;
+
 		if (today == tasks[i]->getTaskDate() && tasks[i]->getStatus() != Status::IN_PROGRESS) {
 			tasks[i]->setStatus(Status::IN_PROGRESS);
 			dash.addTodo(tasks[i]->getId());

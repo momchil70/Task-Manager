@@ -143,7 +143,7 @@ void System::getCollabTasks(unsigned collabIndex, std::ifstream& ifs)
 		String name = tempTask->getAsignee();
 		int index = findUser(name);
 		unsigned id = tempTask->getId();
-		users[index].asign(collabs[collabIndex].getTaskById(id)); ///////////////////////////////////////////////////
+		users[index].asign(collabs[collabIndex].getTaskById(id)); 
 	}
 }
 

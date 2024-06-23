@@ -1,0 +1,23 @@
+login <name> <pass>
+register <name> <pass>
+exit
+logout
+add_task <name> <date> <description>
+list_tasks
+list_tasks_ondate <date>
+list_completed
+list_collabs
+list_collab_tasks <collab name>
+list_dashboard
+update_task_name <id> <new name>
+update_task_description <id> <new description>
+start_task <id>
+add_task_to_dashboard <id>
+remove_task_from_dashboard <id>
+delete_task <id>
+finish_task <id>
+get_task_with_id <id>
+get_task_with_name <name>
+create_collab <collab name>
+asign_task <collab name> <username> <taskname> <date> <description>
+delete_collab <collab name>
