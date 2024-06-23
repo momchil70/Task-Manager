@@ -1,5 +1,4 @@
 #include "ExitCommand.h"
-#include "System.h"
 
 ExitCommand::ExitCommand(System* s): Command(s)
 {

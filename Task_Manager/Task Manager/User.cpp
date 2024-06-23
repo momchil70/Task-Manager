@@ -204,6 +204,9 @@ void User::startTask(unsigned id)
 	if (index == -1) {
 		throw std::exception("Non existing task");
 	}
+	if (tasks[index]->getStatus() == Status::DONE) {
+		throw std::exception("You cannot start a finished task!");
+	}
 	tasks[index]->setStatus(Status::IN_PROGRESS);
 }
 
@@ -305,9 +308,10 @@ void User::getTask(unsigned id) const
 void User::listCompleted() const
 {
 	int count = 0;
-	std::cout << std::endl;
+	
 	for (int i = 0; i < size; i++) {
 		if (tasks[i]->getStatus() == Status::DONE) {
+			std::cout << std::endl;
 			tasks[i]->print();
 			std::cout << std::endl;
 			count++;

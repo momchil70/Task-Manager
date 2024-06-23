@@ -1,10 +1,7 @@
 #pragma once
 #include <fstream>
-#include "User.h"
 #include "Collaboration.h"
 #include "Vector.hpp"
-#include "Command.h"
-#include "CommandFactory.h"
 #include "Util.h"
 
 
@@ -20,8 +17,6 @@ class System
 	void loadUsers();
 	void loadUserTasks(std::ifstream& ifs);
 	void loadCollabs();
-
-	void commandMode();
 
 	void saveToDataBase() const;
 	void saveUsers() const;
@@ -53,6 +48,8 @@ public:
 
 	User& getActiveUser();
 
+	unsigned getActiveIndex() const;
+
 	void logout();
 
 	unsigned findFreeId() const;
@@ -72,6 +69,8 @@ public:
 	void asignTask(const String& collab, const String& user, const String& taskName, const String& due_date, const String& description);
 
 	bool hasLoggedUser() const;
+
+	bool isRunning() const;
 
 	~System();
 };

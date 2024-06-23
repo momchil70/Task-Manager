@@ -46,7 +46,6 @@ void System::loadData()
 
 
 
-
 void System::saveToDataBase() const
 {
 	saveUsers();
@@ -175,32 +174,6 @@ User& System::getCreator(std::ifstream& ifs)
 	return creator;
 }
 
-
-void System::commandMode()
-{
-	String command;
-	Command* current;
-
-	while (systemRunning) {
-		std::cout << "->";
-		std::cin >> command;
-
-		if (command != "login" && command != "register" && command != "exit" && loggedIndex == -1) {
-			std::cout << "No logged user! I cannot execute any command! Try again!" << std::endl;
-			continue;
-		}
-
-		try {
-			Command* current = createCommand(command, this);
-			current->execute();
-			delete current;
-		}
-		catch (std::exception& e) {
-			std::cout << e.what() << std::endl;
-		}
-	}
-}
-
 bool System::isTakenUsername(const String& name) const
 {
 	int size = users.size();
@@ -256,8 +229,6 @@ Collaboration& System::getCollab(unsigned id)
 System::System()
 {
 	loadData();
-
-	commandMode();
 }
 
 void System::login(const String& name, unsigned pass)
@@ -268,7 +239,7 @@ void System::login(const String& name, unsigned pass)
 			loggedIndex = i;
 			std::cout << "Hello " << name << std::endl;
 
-			String temp = getCurrentDate(); //ETO TUK MOJESH DA SI PRAVISH TESTOVE --------------------------
+			String temp = getCurrentDate(); //You can make tests here. Just set the string on a date of your wish --------------------------
 
 			Date today = DatePool::getInstance().getDate(temp, "");
 
@@ -279,7 +250,7 @@ void System::login(const String& name, unsigned pass)
 			return;
 		}
 	}
-	std::cout << "Cannot find user with that name! Register first!" << std::endl;
+	std::cout << " Wrong name or password!" << std::endl;
 }
 
 void System::register_user()
@@ -308,6 +279,11 @@ void System::addUser(const User& user)
 User& System::getActiveUser()
 {
 	return users[loggedIndex];
+}
+
+unsigned System::getActiveIndex() const
+{
+	return loggedIndex;
 }
 
 void System::logout()
@@ -410,13 +386,19 @@ void System::asignTask(const String& collab, const String& user, const String& t
 	unsigned collabIndex = findCollaboration(collab);
 	unsigned collabId = collabs[collabIndex].getId();
 	CollabTask temp(taskName, due_date, description, freeId, users[userIndex].getName(), collabId);
+
 	collabs[index].addTask(&temp);
-	users[userIndex].asign(collabs[index].getTaskById(freeId));// tuk shte butash
+	users[userIndex].asign(collabs[index].getTaskById(freeId));
 }
 
 bool System::hasLoggedUser() const
 {
 	return loggedIndex != -1;
+}
+
+bool System::isRunning() const
+{
+	return systemRunning;
 }
 
 

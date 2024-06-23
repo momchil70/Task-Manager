@@ -1,5 +1,4 @@
 #include "AddTaskCommand.h"
-#include "System.h"
 
 AddTaskCommand::AddTaskCommand(System* s) : Command(s)
 {

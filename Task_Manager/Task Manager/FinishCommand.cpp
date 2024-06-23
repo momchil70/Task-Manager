@@ -1,5 +1,4 @@
 #include "FinishCommand.h"
-#include "System.h"
 
 
 FinishCommand::FinishCommand(System* s) : Command(s)

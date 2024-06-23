@@ -1,5 +1,4 @@
 #include "UpdateTaskCommand.h"
-#include "System.h"
 
 UpdateTaskCommand::UpdateTaskCommand(System* s, bool marker) : Command(s)
 {

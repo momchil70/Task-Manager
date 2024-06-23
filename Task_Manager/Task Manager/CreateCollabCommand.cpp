@@ -1,5 +1,4 @@
 #include "CreateCollabCommand.h"
-#include "System.h"
 
 CreateCollabCommand::CreateCollabCommand(System* s) : Command(s)
 {

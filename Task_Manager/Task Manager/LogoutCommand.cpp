@@ -1,5 +1,5 @@
 #include "LogoutCommand.h"
-#include "System.h"
+
 
 LogoutCommand::LogoutCommand(System* s) : Command(s)
 {

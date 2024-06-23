@@ -1,5 +1,4 @@
 #include "AsignTaskCommand.h"
-#include "System.h"
 
 AsignTaskCommand::AsignTaskCommand(System* s) : Command(s)
 {

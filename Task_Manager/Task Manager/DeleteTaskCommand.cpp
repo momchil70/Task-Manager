@@ -1,5 +1,4 @@
 #include "DeleteTaskCommand.h"
-#include "System.h"
 
 DeleteTaskCommand::DeleteTaskCommand(System* s) : Command(s)
 {

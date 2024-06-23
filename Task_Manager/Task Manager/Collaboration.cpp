@@ -132,7 +132,11 @@ Collaboration::Collaboration(const User& creator, const String& name, unsigned _
 void Collaboration::listTasks() const
 {
 	for (int i = 0; i < capacity; i++) {
-		if(tasks[i]) tasks[i]->print();
+		if (tasks[i]) {
+			std::cout << std::endl;
+			tasks[i]->print();
+			std::cout << std::endl;
+		}
 	}
 }
 

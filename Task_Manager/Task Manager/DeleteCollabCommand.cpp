@@ -1,5 +1,4 @@
 #include "DeleteCollabCommand.h"
-#include "System.h"
 
 DeleteCollabCommand::DeleteCollabCommand(System* s) : Command(s)
 {

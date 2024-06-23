@@ -1,5 +1,4 @@
 #include "ListCompletedCommand.h"
-#include "System.h"
 
 
 ListCompletedCommand::ListCompletedCommand(System* s) : Command(s)

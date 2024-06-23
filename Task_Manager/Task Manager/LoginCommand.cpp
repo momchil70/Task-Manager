@@ -1,5 +1,5 @@
 #include "LoginCommand.h"
-#include "System.h"
+
 
 LoginCommand::LoginCommand(System* s) : Command(s)
 {

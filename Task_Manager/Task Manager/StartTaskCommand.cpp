@@ -1,5 +1,4 @@
 #include "StartTaskCommand.h"
-#include "System.h"
 
 StartTaskCommand::StartTaskCommand(System* s) : Command(s)
 {

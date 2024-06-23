@@ -1,5 +1,4 @@
 #include "RemoveFromDashCommand.h"
-#include "System.h"
 
 RemoveFromDashCommand::RemoveFromDashCommand(System* s) : Command(s)
 {

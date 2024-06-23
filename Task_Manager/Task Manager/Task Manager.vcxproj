@@ -134,6 +134,7 @@
     <ClInclude Include="Collaboration.h" />
     <ClInclude Include="CollabTask.h" />
     <ClInclude Include="Command.h" />
+    <ClInclude Include="CommandExecutor.h" />
     <ClInclude Include="CommandFactory.h" />
     <ClInclude Include="CreateCollabCommand.h" />
     <ClInclude Include="Dashboard.h" />
@@ -173,6 +174,7 @@
     <ClCompile Include="Collaboration.cpp" />
     <ClCompile Include="CollabTask.cpp" />
     <ClCompile Include="Command.cpp" />
+    <ClCompile Include="CommandExecutor.cpp" />
     <ClCompile Include="CommandFactory.cpp" />
     <ClCompile Include="CreateCollabCommand.cpp" />
     <ClCompile Include="Dashboard.cpp" />

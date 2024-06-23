@@ -1,5 +1,4 @@
 #include "AddDashboardCommand.h"
-#include "System.h"
 
 AddDashboardCommand::AddDashboardCommand(System* s): Command(s)
 {

@@ -1,5 +1,4 @@
 #include "GetTaskCommand.h"
-#include "System.h"
 
 
 GetTaskCommand::GetTaskCommand(System* s, bool marker) : Command(s)

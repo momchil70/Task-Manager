@@ -1,5 +1,5 @@
 #include "RegisterCommand.h"
-#include "System.h"
+
 
 RegisterCommand::RegisterCommand(System* s) : Command(s)
 {

@@ -1,5 +1,4 @@
 #include "ListCollabsCommand.h"
-#include "System.h"
 
 ListCollabsCommand::ListCollabsCommand(System* s) : Command(s)
 {
