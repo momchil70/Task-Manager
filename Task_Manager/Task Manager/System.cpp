@@ -137,13 +137,13 @@ void System::getCollabTasks(unsigned collabIndex, std::ifstream& ifs)
 	unsigned taskCount;
 	ifs.read(reinterpret_cast<char*>(&taskCount), sizeof(unsigned));
 	for (int j = 0; j < taskCount; j++) {
-		CollabTask tempTask;
-		tempTask.getFromDataBase(ifs);
-		collabs[collabIndex].addTask(&tempTask);
-		String name = tempTask.getAsignee();
+		Task* tempTask = new CollabTask();
+		tempTask->getFromDataBase(ifs);
+		collabs[collabIndex].addTask(tempTask);
+		String name = tempTask->getAsignee();
 		int index = findUser(name);
-		unsigned id = tempTask.getId();
-		users[index].asign(collabs[collabIndex].getTaskById(id));
+		unsigned id = tempTask->getId();
+		users[index].asign(collabs[collabIndex].getTaskById(id)); ///////////////////////////////////////////////////
 	}
 }
 
@@ -385,10 +385,10 @@ void System::asignTask(const String& collab, const String& user, const String& t
 	unsigned freeId = this->findFreeId();
 	unsigned collabIndex = findCollaboration(collab);
 	unsigned collabId = collabs[collabIndex].getId();
-	CollabTask temp(taskName, due_date, description, freeId, users[userIndex].getName(), collabId);
+	Task* temp = new CollabTask(taskName, due_date, description, freeId, users[userIndex].getName(), collabId);
 
-	collabs[index].addTask(&temp);
-	users[userIndex].asign(collabs[index].getTaskById(freeId));
+	collabs[index].addTask(temp);
+	users[userIndex].asign(collabs[index].getTaskById(freeId));//-----------------------
 }
 
 bool System::hasLoggedUser() const

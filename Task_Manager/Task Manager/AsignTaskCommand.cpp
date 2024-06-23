@@ -10,8 +10,8 @@ void AsignTaskCommand::execute() const
 	char buffer[1024];
 	std::cin >> collab >> user >> taskName >> due_date;
 	std::cin.ignore();
-	std::cin >> buffer;
-	descr = buffer;;
+	std::cin.getline(buffer, 1024);
+	descr = buffer;
 	try {
 		system->asignTask(collab, user, taskName, due_date, descr);
 	}

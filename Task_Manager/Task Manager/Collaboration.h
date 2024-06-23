@@ -35,7 +35,7 @@ public:
 
 	void addUser(User& user);
 
-	void addTask(const Task* t);
+	void addTask(Task*& t);
 
 	const String& getName() const;
 

@@ -145,14 +145,14 @@ void Collaboration::addUser(User& user)
 	participants.push_back(&user);
 }
 
-void Collaboration::addTask(const Task* t)
+void Collaboration::addTask(Task*& t)
 {
 	int firstFreeIndex = findFreeIndex();
 	if (firstFreeIndex == -1) resize(capacity * 2);
 	firstFreeIndex = findFreeIndex();
 
 	
-	tasks[firstFreeIndex] = t->clone();
+	tasks[firstFreeIndex] = t;
 	count++;
 }
 
